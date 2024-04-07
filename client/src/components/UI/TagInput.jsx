@@ -4,14 +4,19 @@ import { IoCloseSharp } from "react-icons/io5";
 
 const TagInput = ({ initTags = null, customStyle, tagsValue }) => {
     const [tags, setTags] = useState(initTags ?? [])
+
+    const addTag = (e) => {
+        if (!e.target.value.trim()) return
+        let newTag = e.target.value.trim();
+        let updatedTags = tags.concat(newTag)
+        setTags(updatedTags)
+        tagsValue.current = updatedTags
+        e.target.value = null
+    }
+
     const handleKeyDown = (e) => {
-        if (e['code'] == 'Enter' || e['code'] == 'Space') {
-            if (!e.target.value.trim()) return
-            let newTag = e.target.value.trim();
-            let updatedTags = tags.concat(newTag)
-            setTags(updatedTags)
-            tagsValue.current = updatedTags
-            e.target.value = null
+        if (e['code'] == 'Enter') {
+            addTag(e)
         }
 
         else if (e['code'] == 'Backspace') {
@@ -39,11 +44,7 @@ const TagInput = ({ initTags = null, customStyle, tagsValue }) => {
                 <div key={index} className='tag-item rounded-full bg-slate-300 px-2 py-1 flex items-center justify-around gap-2 cursor-pointer text-sm'><span>{tag}</span> <span className='bg-black text-white rounded-full flex items-center justify-center p-[1px] ' onClick={() => handleRemoveTag(index)}><IoCloseSharp /></span>
                 </div>
             ))}
-
-
-            <input type="text" className='outline-none flex-1' style={{ width: 0 }} placeholder='Add a Tag...' autoFocus onKeyDown={handleKeyDown} />
-
-
+            <input type="text" className='outline-none flex-1' style={{ width: 0 }} placeholder='Add a Tag...' autoFocus onKeyDown={handleKeyDown} onBlur={addTag} />
         </div>
     )
 }

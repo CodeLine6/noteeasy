@@ -70,7 +70,7 @@ router.post('/createuser', [
 
         const authtoken = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET_KEY);
         
-        //await handleInvites(user);
+        await handleInvites(user);
 
         return res.json({ authtoken });
     } catch (error) {
@@ -102,7 +102,7 @@ router.post('/login', [
         }
 
         const authtoken = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET_KEY);
-        //await handleInvites(user);
+        await handleInvites(user);
 
         return res.json({ authtoken });
     } catch (error) {

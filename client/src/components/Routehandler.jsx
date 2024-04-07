@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import ReactGA from 'react-ga4';
 import Invite from "./Invite";
 import Background from "./Background";
+import Forgetpassword from "../pages/Forgetpassword";
+import Resetpassword from "../pages/Resetpassword";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const Authcheck = ({ Comp }) => {
@@ -45,6 +47,8 @@ const Routehandler = () => {
                 <Route path="login" element={<Authcheck Comp={Login} />} />
                 <Route path="signup" element={<Authcheck Comp={Signup} />} />
                 <Route path="invite" element={<Invite />} />
+                <Route path="forget-password" element={<Forgetpassword />} />
+                <Route path="reset-password/:token" element={<Resetpassword />} />
             </Routes>
         </AlertState>
 

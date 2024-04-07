@@ -2,12 +2,7 @@ import React, { useContext, useRef, useEffect } from 'react';
 import NotesContext from '../../context/Notes/NotesContext';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
-
-export const resizeTextarea = (e) => {
-    const textarea = e.target;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-};
+import TagInput from '../UI/TagInput';
 
 const Addnote = React.memo(({ children, ...props }) => {
     const { addNote } = useContext(NotesContext);
@@ -15,12 +10,12 @@ const Addnote = React.memo(({ children, ...props }) => {
     const formRef = useRef(null);
     const titleInputRef = useRef(null);
     const descriptionInputRef = useRef(null);
-    const tagInputRef = useRef(null);
+    const tags = useRef([]);
 
     const resetInputs = () => {
         titleInputRef.current.value = '';
-        descriptionInputRef.current.value = '';
-        tagInputRef.current.value = '';
+        descriptionInputRef.current.innerText = null;
+        tags.current = [];
     };
 
     const handleAdd = (e) => {
@@ -29,16 +24,15 @@ const Addnote = React.memo(({ children, ...props }) => {
 
         const title = titleInputRef.current;
         const description = descriptionInputRef.current;
-        const tag = tagInputRef.current;
-        if (!description.value && !title.value) return;
-        addNote(title.value, description.value, tag.value);
+        const tag = tags.current;
+        if (!description.innerText && !title.value) return;
+        addNote(title.value, description.innerText, tag);
         resetInputs();
     };
 
     const documentListener = (e) => {
         if (formRef.current && !formRef.current.contains(e.target)) {
             handleAdd();
-            descriptionInputRef.current.removeAttribute('style');
             formRef.current.removeAttribute('form-clicked');
             document.removeEventListener('mousedown', documentListener);
         }
@@ -68,9 +62,9 @@ const Addnote = React.memo(({ children, ...props }) => {
                 <div className='hidden group-focus-within:block'>
                     <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' />
                 </div>
-                <Input inputRef={descriptionInputRef} placeholder='Take a note...' name='description' inputType='textarea' handleChange={resizeTextarea} />
+                <div contentEditable="true" className='pl-3 my-2 outline-none text-lg cursor-text group-focus-within:text-base group-focus-within:mt-0 empty:before:absolute empty:before:opacity-50 empty:before:content-["Take_a_note..."] min-h-6' ref={descriptionInputRef}></div>
                 <div className='hidden group-focus-within:block'>
-                    <Input inputRef={tagInputRef} placeholder='Tag' name='tag' styleType='notes' />
+                    <TagInput initTags={tags.current} customStyle="px-3" tagsValue={tags} />
                 </div>
                 <Button text="Close" className='hidden rounded group-focus-within:block float-right mr-3 mb-2 px-4 py-2 hover:bg-[rgba(95,99,104,0.039)] active:bg-[rgba(95,99,104,0.161)] focus-visible:outline-none focus-visible:bg-[rgba(95,99,104,0.039)]' handleClick={handleAdd} />
             </form>

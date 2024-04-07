@@ -27,7 +27,7 @@ const NoteItem = ({ note, loading, parent }) => {
     return (
         <motion.div className='w-full sm:w-1/2 md:w-1/4 lg:w-1/5 p-1 group box-border' layoutId={note.lId || note._id} layout exit={{ scale: 0 }} >
             <motion.div ref={scope} style={{ x, y, opacity: note.pending ? 0.4 : 1 }} drag dragConstraints={parent} dragElastic={0.1} whileDrag={{ scale: 1.1 }} className="w-full border border-[#e0e0e0] rounded-md overflow-hidden bg-white" >
-                <div className="relative">
+                <div className="relative px-3">
                     <ToggleNotePinned className="group-hover:block" noteId={note._id} isPinned={note.pinned} />
                     <Notebody note={note}>
                         <Noteactions modifyObj={modifyObj} loading={loading} />
@@ -44,12 +44,16 @@ const Notebody = ({ note, children }) => {
         <>
             {note.title || note.description ?
                 <>
-                    <h5 className="card-title pt-3 px-4 font-bold">{note.title.length > 250 ? note.title.slice(0, 250) + '...' : note.title}</h5>
-                    <p className="card-text py-3 px-4 mb-1">{note.description.length > 250 ? note.description.slice(0, 250) + '...' : note.description}</p>
+                    <h5 className="card-title pt-3 max-w-[90%] max-h-13 overflow-hidden text-ellipsis font-bold" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '2' }}>{note.title}</h5>
+                    <p className="card-text pt-3 max-h-20 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '3' }}>{note.description}</p>
                 </>
-                : <p className="card-text py-3 px-4">Empty Note</p>
+                : <p className="card-text py-3">Empty Note</p>
             }
-            <a className="mx-4 px-3 py-1 rounded-md bg-slate-200 text-xs font-semibold">{note.tag}</a>
+            <div className='flex gap-1 flex-wrap mt-4'>
+                {note.tag.map((tag, idx) => (
+                    <a className="px-3 py-1 rounded-md bg-slate-200 text-xs font-semibold" key={tag + idx}>{tag}</a>
+                ))}
+            </div>
             {children}
         </>
     )
@@ -60,7 +64,7 @@ NoteItem.defaultProps = {
         _id: uuid(),
         title: <Skeleton />,
         description: <Skeleton />,
-        tag: <Skeleton width={30} />
+        tag: [<Skeleton width={30} />]
     }
 }
 

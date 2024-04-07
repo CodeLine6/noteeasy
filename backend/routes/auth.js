@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { default: mongoose } = require('mongoose');
 const User = require('../models/User');
 const Note = require('../models/Notes');
 const Invites = require('../models/Invites');
@@ -7,8 +8,9 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fetchUser = require('../middleware/fetchuser');
-
-const JWT_SECRET = 'dallabadmaashbada';
+const { forgetPassword,
+    resetPassword } = require("../controllers/forgetPassword.controller.js");
+    
 
 // Centralized error handling middleware
 const errorHandler = (res, message) => {
@@ -18,14 +20,19 @@ const errorHandler = (res, message) => {
 
 // Handle invites for new user
 const handleInvites = async (user) => {
+    const session = await mongoose.startSession();
+
     try {
         const invites = await Invites.find({ collaboratorEmail: user.email });
         const noteIds = invites.map(invite => invite.noteId);
         await Note.updateMany(
             { _id: { $in: noteIds } },
             { $push: { collaborators: user._id } }
-        );
-        await Invites.deleteMany({ collaboratorEmail: user.email });
+        ).session(session);
+
+        await Invites.deleteMany({ collaboratorEmail: user.email }).session(session);
+
+        await session.commitTransaction();
     } catch (error) {
         throw new Error(error);
     }
@@ -35,7 +42,7 @@ const handleInvites = async (user) => {
 router.post('/createuser', [
     body('name', 'Enter a valid name').isLength({ min: 3 }),
     body('email', 'Enter a valid email').isEmail(),
-    body('password', 'Password must be at least 5 characters').isLength({ min: 5 })
+    body('password', 'Password must be at least 6 characters').isLength({ min: 6 })
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -61,9 +68,9 @@ router.post('/createuser', [
 
         await user.save();
 
-        const authtoken = jwt.sign({ user: { id: user.id } }, JWT_SECRET);
+        const authtoken = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET_KEY);
         
-        await handleInvites(user);
+        //await handleInvites(user);
 
         return res.json({ authtoken });
     } catch (error) {
@@ -94,7 +101,8 @@ router.post('/login', [
             return res.status(400).json({ message: "Please try to login with correct credentials" });
         }
 
-        const authtoken = jwt.sign({ user: { id: user.id } }, JWT_SECRET);
+        const authtoken = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET_KEY);
+        //await handleInvites(user);
 
         return res.json({ authtoken });
     } catch (error) {
@@ -122,5 +130,8 @@ router.post('/checkregistration', async (req, res) => {
         return errorHandler(res, error.message);
     }
 });
+
+router.post("/forget-password", forgetPassword);
+router.post("/reset-password/:token", resetPassword);
 
 module.exports = router;

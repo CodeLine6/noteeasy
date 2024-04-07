@@ -43,8 +43,8 @@ router.post('/addnote', fetchUser, [
             title, description, tag, user: req.user.id
         });
 
-        
-        const savedNote = await newNote.save();
+        let savedNote = await newNote.save();
+        savedNote = await Note.findById(savedNote._id).populate('user').populate('collaborators')    
         return res.status(200).json(savedNote)
 
     } catch (error) {
@@ -156,18 +156,17 @@ router.patch('/addcollaborator/:id',fetchUser, async (req,res) => {
             html: emailBody(sharer.name,sharer.email,note,collaboratorEmail, collaboratorDetails), // html body
         };
 
-        transporter.sendMail(message).then((info) => {
-            return res.status(200).json(note)
+        transporter.sendMail(message).then(async (info) => {
+            const updatedNote = await Note.findById(note._id).populate('user').populate('collaborators')
+            return res.status(200).json(updatedNote)
         }).catch((err) => {
             console.log(err)
-            return res.status(500).json({ message: err });
+            return res.status(500).json({ message: err.message });
         }
         );
-
-
     }
     catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: error.message });
     }
 })
 

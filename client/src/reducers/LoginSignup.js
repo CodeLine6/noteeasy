@@ -23,10 +23,12 @@ const userReducer = (state, action) => {
     }
 
     else if (action.type === "error") {
+        (typeof JSON.parse(action.error) === "object") ? (JSON.parse(action.error)).map(e => (
+            action.setAlert({ type: 'error', message: e.msg })
+        )) : action.setAlert({ type: 'error', message: action.error })
         return {
             ...state,
             submitting: false,
-            err: action.error
         }
     }
     else return state

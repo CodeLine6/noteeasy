@@ -105,8 +105,8 @@ const NotesState = (props) => {
         ? {
             ...note,
             title : titleInput.value,
-            description: descriptionInput.value,
-            tag: tagInput.value
+            description: descriptionInput.innerText,
+            tag: tagInput
           }
         : note;
     });
@@ -120,8 +120,8 @@ const NotesState = (props) => {
       },
       body: JSON.stringify({
         "title": titleInput.value,
-        "description": descriptionInput.value,
-        "tag": tagInput.value
+        "description": descriptionInput.innerText,
+        "tag": tagInput
       }),
     })
     .then(async (response) => {
@@ -221,6 +221,12 @@ const NotesState = (props) => {
         body: JSON.stringify({
             collaboratorEmail: inputRef.current.value
         })
+    }).then(res => res.json()).then(data => {
+      const updatedNotes = notes.map((note) => {
+        return note._id === data._id
+          ? {...data}: note;
+      });
+      setNotes(updatedNotes);
     }).catch(e => {
 
     })

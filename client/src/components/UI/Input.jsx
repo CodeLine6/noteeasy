@@ -16,7 +16,7 @@ const Input = ({ label, placeholder, inputType, name, value, styleType, handleCh
     return (
         <div className="flex flex-col gap-2">
             {label && <label htmlFor={name} className="text-base font-bold">{label}</label>}
-            <textarea rows="1" ref={inputRef} className='w-full px-3 py-2 outline-none resize-none text-lg group-focus-within:text-base overflow-hidden' id={name} name={name} placeholder={placeholder} onChange={handleChange} value={value}></textarea>
+            <textarea rows="1" ref={inputRef} className={`w-full px-3 py-2 outline-none resize-none overflow-hidden ${classes}`} id={name} name={name} placeholder={placeholder} onChange={handleChange} value={value}></textarea>
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext';
 import userReducer from '../reducers/LoginSignup';
 import Form from '../components/Form';
@@ -29,8 +29,8 @@ const Signup = () => {
   const setAlerts = useContext(AlertContext);
   let navigate = useNavigate();
 
-  const [{ name, password, email, cpassword, submitting, err, success }, dispatch] = useReducer(userReducer, {
-    name: "", password: "", email: "", cpassword: "", submitting: false, err: null, success: false
+  const [{ name, password, email, cpassword, submitting, success }, dispatch] = useReducer(userReducer, {
+    name: "", password: "", email: "", cpassword: "", submitting: false, success: false
   })
 
 
@@ -44,7 +44,7 @@ const Signup = () => {
       dispatch({ type: "success", payload: { response } })
     }
     catch (e) {
-      dispatch({ type: "error", error: e.message });
+      dispatch({ type: "error", setAlert: setAlerts, error: e.message });
     }
 
   }
@@ -90,6 +90,7 @@ const Signup = () => {
       inputType: 'password',
       name: 'cpassword',
       placeholder: '*********',
+      classes: 'mb-3',
       handleChange: (e) => dispatch({ type: "input", name: "cpassword", value: e.target.value })
     },
 
@@ -97,7 +98,10 @@ const Signup = () => {
 
   return (
     <div className='flex justify-center items-center w-full h-screen bg-gray-500'>
-      <Form title="Sign Up" subtitle="Enter your information to create an account"  {...{ handleSubmit, fields, err }} isSubmitDisabled={name.length === 0 || email.length === 0 || password.length < 6 || password !== cpassword || submitting} redirectTxt="Already have an account?" redirectAnchor="Login" redirectLink="/login" />
+      <div id="form-wrapper" className="bg-white rounded-lg w-[400px] p-6">
+        <Form title="Sign Up" subtitle="Enter your information to create an account"  {...{ handleSubmit, fields }} isSubmitDisabled={submitting} ctaText="Sign Up" />
+        <p className="text-center mt-3 font-medium">Already have an account? <ins><Link to="/login">Login</Link></ins></p>
+      </div>
     </div>
 
   )

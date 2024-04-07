@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useReducer } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext';
 import userReducer from '../reducers/LoginSignup'
 import Form from '../components/Form';
-
-
 
 const signIn = async ({ email, password }) => {
     const API_HOST = process.env.REACT_APP_API_HOST;
@@ -32,8 +30,8 @@ const Login = () => {
     const setAlerts = useContext(AlertContext);
     let navigate = useNavigate();
 
-    const [{ email, password, submitting, success, err }, dispatch] = useReducer(userReducer, {
-        email: "", password: "", submitting: false, success: false, err: false
+    const [{ email, password, submitting, success }, dispatch] = useReducer(userReducer, {
+        email: "", password: "", submitting: false, success: false
     })
 
     const handleSubmit = async (e) => {
@@ -47,7 +45,7 @@ const Login = () => {
         }
 
         catch (e) {
-            dispatch({ type: "error", error: JSON.parse(e.message) });
+            dispatch({ type: "error", setAlert: setAlerts, error: e.message });
         }
 
     }
@@ -80,13 +78,18 @@ const Login = () => {
             inputType: 'password',
             name: 'password',
             placeholder: '*********',
+            classes: 'mb-3',
             handleChange: (e) => dispatch({ type: "input", name: "password", value: e.target.value })
         }
     ]
 
     return (
         <div className='flex justify-center items-center w-full h-screen bg-gray-500'>
-            <Form title="Sign In" subtitle="Enter your credentials to access your account"  {...{ handleSubmit, fields, err }} isSubmitDisabled={submitting} redirectTxt="Don't have an account?" redirectAnchor="Sign Up" redirectLink="/signup" />
+            <div id="form-wrapper" className="bg-white rounded-lg w-[400px] p-6">
+                <Form title="Sign In" subtitle="Enter your credentials to access your account"  {...{ handleSubmit, fields }} isSubmitDisabled={submitting} ctaText="Log In" />
+                <p className="text-center mt-3 font-medium">Forgot Password? <ins><Link to="/forget-password">Reset</Link></ins></p>
+                <p className="text-center mt-3 font-medium">Don't have an account? <ins><Link to="/signup">Sign Up</Link></ins></p>
+            </div>
         </div>
     )
 }

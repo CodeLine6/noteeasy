@@ -12,10 +12,9 @@ const notesSchema = new Schema({
         type: String,
         required: true
     },
-    tag : {
-        type: String,
-        default: "General"
-    },
+    tag : [{
+        type: String
+    }],
     pinned : {
         type : Boolean,
         default : false 

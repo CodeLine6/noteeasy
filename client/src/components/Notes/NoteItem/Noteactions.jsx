@@ -6,8 +6,6 @@ import { VscEdit, VscTrash } from "react-icons/vsc";
 import { FiUserPlus } from "react-icons/fi";
 import { ModalContext } from '../../../context/Modal/ModalContext';
 
-
-
 const Noteactions = ({ modifyObj, loading }) => {
     const { deleteNote, setToModify, duplicateNote } = useContext(NotesContext);
     const { setModifyComponent, modifyComponent } = useContext(ModalContext)

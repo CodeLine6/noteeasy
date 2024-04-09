@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const jwt = require("jsonwebtoken");
 const bycrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
+const transporter = require('../Email/transporter');
+const { resetPasswordBody } = require('../Email/Invite');
 
 const forgetPassword = async (req, res) => {
     try {
@@ -14,29 +15,16 @@ const forgetPassword = async (req, res) => {
         }
     
         // Generate a unique JWT token for the user that contains the user's id
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: "10m",});
+        const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET_KEY, {expiresIn: "10m",});
     
         // Send the token to the user's email
-        const transporter = nodemailer.createTransport({
-            host: 'smtppro.zoho.in', // your email domain
-            port: 465,
-            secure: true, // use SSL
-            auth: {
-                user: process.env.GMAIL_APP_USER, // your email address
-                pass: process.env.GMAIL_APP_PASSWORD // your password
-            }
-        });
     
         // Email configuration
         const mailOptions = {
           from: process.env.GMAIL_APP_USER,
           to: req.body.email,
           subject: "Reset Password",
-          html: `<h1>Reset Your Password</h1>
-        <p>Click on the following link to reset your password:</p>
-        <a href="${process.env.CLIENT_URL}/reset-password/${token}">${process.env.CLIENT_URL}/reset-password/${token}</a>
-        <p>The link will expire in 10 minutes.</p>
-        <p>If you didn't request a password reset, please ignore this email.</p>`,
+          html: resetPasswordBody(user.name,token),
         };
     
         // Send the email
@@ -65,7 +53,7 @@ const resetPassword = async (req, res) => {
         }
     
         // find the user with the id from the token
-        const user = await User.findOne({ _id: decodedToken.userId });
+        const user = await User.findOne({ _id: decodedToken.user.id });
         if (!user) {
           return res.status(401).json({ message: "no user found" });
         }

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext';
 import userReducer from '../reducers/LoginSignup';
 import Form from '../components/Form';
+import GoogleSignIn from '../components/UI/GoogleSignIn';
 
 
 const signUp = async ({ name, password, email }) => {
@@ -100,6 +101,7 @@ const Signup = () => {
     <div className='flex justify-center items-center w-full h-screen bg-gray-500'>
       <div id="form-wrapper" className="bg-white rounded-lg w-[400px] p-6">
         <Form title="Sign Up" subtitle="Enter your information to create an account"  {...{ handleSubmit, fields }} isSubmitDisabled={submitting} ctaText="Sign Up" />
+        <GoogleSignIn />
         <p className="text-center mt-3 font-medium">Already have an account? <ins><Link to="/login">Login</Link></ins></p>
       </div>
     </div>

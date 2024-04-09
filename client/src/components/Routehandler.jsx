@@ -10,6 +10,7 @@ import Invite from "./Invite";
 import Background from "./Background";
 import Forgetpassword from "../pages/Forgetpassword";
 import Resetpassword from "../pages/Resetpassword";
+import LoginSuccess from "../pages/LoginSuccess";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const Authcheck = ({ Comp }) => {
@@ -32,7 +33,6 @@ const Routehandler = () => {
     }, [location]);
 
     return (
-
         <AlertState>
             <Routes>
                 <Route path="/" element={<>
@@ -49,6 +49,7 @@ const Routehandler = () => {
                 <Route path="invite" element={<Invite />} />
                 <Route path="forget-password" element={<Forgetpassword />} />
                 <Route path="reset-password/:token" element={<Resetpassword />} />
+                <Route path="login-success" element={<LoginSuccess />} />
             </Routes>
         </AlertState>
 

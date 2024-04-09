@@ -8,7 +8,7 @@ let MailGenerator = new Mailgen({
     }
 });
 
-module.exports = (senderName,senderEmail,note,collaboratorEmail,collaboratorDetails) => {
+const collaboratorInviteBody = (senderName,senderEmail,note,collaboratorEmail,collaboratorDetails) => {
     const response = {
         body: {
             name: collaboratorDetails ? collaboratorDetails.name : collaboratorEmail,
@@ -25,3 +25,42 @@ module.exports = (senderName,senderEmail,note,collaboratorEmail,collaboratorDeta
     }
     return MailGenerator.generate(response)
 }
+
+const resetPasswordBody = (name,token) => {
+    const response = {
+        body: {
+            name,
+            intro: `<p>The link will expire in 10 minutes.</p>
+            <p>If you didn't request a password reset, please ignore this email.</p>`,
+            action: {
+                instructions: `Click on the following link to reset your password`,
+                button: {
+                    color: '#22BC66', // Optional action button color
+                    text: 'Reset Password',
+                    link: `${process.env.CLIENT_URL}/reset-password/${token}`
+                }
+            }
+        }
+    }
+    return MailGenerator.generate(response)
+}
+
+const temporaryPasswordBody = (name,password) => {
+    const response = {
+        body: {
+            name,
+            intro: `Welcome to Noteseasy. We've generated a temporary password for you which you can find below. We request you to update it as soon as possible`,
+            action: {
+                instructions: `Your temporary password : <b>${password}</b>`,
+                button: {
+                    color: '#22BC66', // Optional action button color
+                    text: 'Reset Password',
+                    link: `${process.env.CLIENT_URL}/forget-password/`
+                }
+            }
+        }
+    }
+    return MailGenerator.generate(response)
+}
+
+module.exports = {collaboratorInviteBody,resetPasswordBody,temporaryPasswordBody}

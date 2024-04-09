@@ -1,15 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const { default: mongoose } = require('mongoose');
+
 const User = require('../models/User');
 const Note = require('../models/Notes');
 const Invites = require('../models/Invites');
+
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
 const fetchUser = require('../middleware/fetchuser');
-const { forgetPassword,
-    resetPassword } = require("../controllers/forgetPassword.controller.js");
+const { forgetPassword,resetPassword } = require("../controllers/forgetPassword.controller.js");
+const passport = require('passport');
     
 
 // Centralized error handling middleware
@@ -22,12 +25,13 @@ const errorHandler = (res, message) => {
 const handleInvites = async (user) => {
     const session = await mongoose.startSession();
 
+    session.startTransaction();
     try {
         const invites = await Invites.find({ collaboratorEmail: user.email });
         const noteIds = invites.map(invite => invite.noteId);
         await Note.updateMany(
             { _id: { $in: noteIds } },
-            { $push: { collaborators: user._id } }
+            { $push: { collaborators: user.id } }
         ).session(session);
 
         await Invites.deleteMany({ collaboratorEmail: user.email }).session(session);
@@ -101,9 +105,8 @@ router.post('/login', [
             return res.status(400).json({ message: "Please try to login with correct credentials" });
         }
 
-        const authtoken = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET_KEY);
+        const authtoken = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET_KEY);
         await handleInvites(user);
-
         return res.json({ authtoken });
     } catch (error) {
         return errorHandler(res, error.message);
@@ -130,6 +133,16 @@ router.post('/checkregistration', async (req, res) => {
         return errorHandler(res, error.message);
     }
 });
+
+// Routes
+router.get('/google',passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/google/callback',passport.authenticate('google', { session: false,failureRedirect: '/' }),
+  (req, res) => {
+    const token = jwt.sign({ user: { id: req.user.id } }, process.env.JWT_SECRET_KEY);    
+    res.redirect(`${process.env.CLIENT_URL}/login-success?token=${token}`);
+  }
+);
 
 router.post("/forget-password", forgetPassword);
 router.post("/reset-password/:token", resetPassword);

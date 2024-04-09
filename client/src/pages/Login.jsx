@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext';
 import userReducer from '../reducers/LoginSignup'
 import Form from '../components/Form';
+import GoogleSignIn from '../components/UI/GoogleSignIn';
 
 const signIn = async ({ email, password }) => {
     const API_HOST = process.env.REACT_APP_API_HOST;
@@ -87,6 +88,7 @@ const Login = () => {
         <div className='flex justify-center items-center w-full h-screen bg-gray-500'>
             <div id="form-wrapper" className="bg-white rounded-lg w-[400px] p-6">
                 <Form title="Sign In" subtitle="Enter your credentials to access your account"  {...{ handleSubmit, fields }} isSubmitDisabled={submitting} ctaText="Log In" />
+                <GoogleSignIn />
                 <p className="text-center mt-3 font-medium">Forgot Password? <ins><Link to="/forget-password">Reset</Link></ins></p>
                 <p className="text-center mt-3 font-medium">Don't have an account? <ins><Link to="/signup">Sign Up</Link></ins></p>
             </div>

@@ -4,9 +4,9 @@ const fetchUser = require('../middleware/fetchuser');
 const Note = require('../models/Notes');
 const User = require('../models/User');
 const Invite = require('../models/Invites');
-const nodemailer = require('nodemailer');
 const { body, validationResult } = require('express-validator');
-const emailBody = require("../Email/Invite")
+const {collaboratorInviteBody} = require("../Email/Invite");
+const transporter = require('../Email/transporter');
 
 // ROUTE 1: Get all notes using: GET "/api/notes" . Login required
 
@@ -137,23 +137,12 @@ router.patch('/addcollaborator/:id',fetchUser, async (req,res) => {
     }
 
     const sharer = await User.findById(req.user.id);
-        
-        let config = {
-            host: 'smtppro.zoho.in', // your email domain
-            port: 465,
-            secure: true, // use SSL
-            auth: {
-                user: process.env.GMAIL_APP_USER, // your email address
-                pass: process.env.GMAIL_APP_PASSWORD // your password
-             }
-        }
-        let transporter = nodemailer.createTransport(config);
 
         let message = {
             from: process.env.GMAIL_APP_USER, // sender address
             to: collaboratorEmail, // list of receivers
             subject: `Note shared with you: "${note.title}"`, // Subject line
-            html: emailBody(sharer.name,sharer.email,note,collaboratorEmail, collaboratorDetails), // html body
+            html: collaboratorInviteBody(sharer.name,sharer.email,note,collaboratorEmail, collaboratorDetails), // html body
         };
 
         transporter.sendMail(message).then(async (info) => {

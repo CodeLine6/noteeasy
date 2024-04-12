@@ -106,7 +106,7 @@ router.post('/login', [
         }
 
         const authtoken = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET_KEY);
-        await handleInvites(user);
+        //await handleInvites(user);
         return res.json({ authtoken });
     } catch (error) {
         return errorHandler(res, error.message);
@@ -138,8 +138,9 @@ router.post('/checkregistration', async (req, res) => {
 router.get('/google',passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',passport.authenticate('google', { session: false,failureRedirect: '/' }),
-  (req, res) => {
+  async (req, res) => {
     const token = jwt.sign({ user: { id: req.user.id } }, process.env.JWT_SECRET_KEY);    
+    await handleInvites(req.user);
     res.redirect(`${process.env.CLIENT_URL}/login-success?token=${token}`);
   }
 );

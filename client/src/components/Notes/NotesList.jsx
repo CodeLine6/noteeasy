@@ -1,25 +1,43 @@
-import { useContext, useMemo, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef } from 'react';
 import NotesContext from '../../context/Notes/NotesContext';
 import NoteItem from './NoteItem';
 import { AnimatePresence, motion } from 'framer-motion';
+import { SearchContext } from '../../context/SearchContext';
 
 
 const NotesList = () => {
     const { notes, loading } = useContext(NotesContext);
+    const { searchTerm } = useContext(SearchContext);
     const ref = useRef(null);
-
-    const pinnedNotes = useMemo(() => (
-        notes.filter(note => note.pinned)
-    ), [notes])
-
-    const rest = useMemo(() => (
-        notes.filter(note => !(note.pinned))
-    ), [notes])
-
-
 
     const generateLoadingArray = (length) => Array.from({ length }, (_, index) => index);
 
+    const filteredNotes = useMemo(() => {
+        if (!searchTerm) return notes;
+        return notes.filter(note => note.title.toLowerCase().includes(searchTerm.toLowerCase()) || note.description.toLowerCase().includes(searchTerm.toLowerCase())).map(
+            note => {
+                let newTitle = note.title.replace(new RegExp(searchTerm, 'gi'), (match) => {
+                    return `<mark style="background-color: yellow;">${match}</mark>`
+                })
+                let newDescription = note.description.replace(new RegExp(searchTerm, 'gi'), (match) => {
+                    return `<mark style="background-color: yellow;">${match}</mark>`
+                })
+                return {
+                    ...note,
+                    title: newTitle,
+                    description: newDescription
+                }
+            }
+        )
+    }, [searchTerm, notes])
+
+    const pinnedNotes = useMemo(() => (
+        filteredNotes.filter(note => note.pinned)
+    ), [filteredNotes])
+
+    const rest = useMemo(() => (
+        filteredNotes.filter(note => !(note.pinned))
+    ), [filteredNotes])
     console.log('Notelist rendered')
 
     return (
@@ -27,6 +45,7 @@ const NotesList = () => {
             {loading && <div className="container mx-auto px-5 pt-5 flex flex-wrap items-start content-baseline flex-grow" >
                 {generateLoadingArray(15).map(g => <NoteItem key={g} loading />)}
             </div>}
+
 
             {pinnedNotes.length > 0 && <motion.div className='container mx-auto px-5 mb-5'>
                 <motion.h4 initial={{ opacity: 0 }} animate={{ opacity: 1 }} >PINNED</motion.h4>

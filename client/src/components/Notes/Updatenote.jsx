@@ -13,8 +13,8 @@ const Updatenote = ({ resetPositions, controls, exitState }) => {
     const { updateNote, toModify, setToModify, editModal } = useContext(NotesContext);
 
     useEffect(() => {
-        titleInput.current.value = toModify.title;
-        descriptionInput.current.innerText = toModify.description;
+        titleInput.current.value = toModify.title.replace(/<mark[^>]*>|<\/mark>/g, '');
+        descriptionInput.current.innerText = toModify.description.replace(/<mark[^>]*>|<\/mark>/g, '');
     }, [])
 
     const handleUpdate = async () => {

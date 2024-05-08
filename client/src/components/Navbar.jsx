@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, useNavigate } from "react-router-dom";
 import AlertContext from '../context/Alert/AlertContext';
+import { DesktopSearch } from './Searchbar';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -45,29 +46,18 @@ const Navbar = () => {
 
 
   return (
-    <nav className="py-2 px-4 border-b-2 flex justify-between items-center">
-      <NavLink className="navbar-brand font-mono" to="/"><img src="./logo.png" className='w-48' alt={process.env.REACT_APP_NAME} /></NavLink>
-
+    <nav className="py-2 px-2 sm:px-4 border-b-2 flex sm:justify-between items-center gap-3">
+      <NavLink className="navbar-brand font-mono" to="/"><img src="./logo.png" className='w-36 sm:w-48' alt={process.env.REACT_APP_NAME} /></NavLink>
+      <DesktopSearch />
       <ul className="list-none flex gap-3 items-center">
-        {!localStorage.getItem("authToken") ?
-
-          <>
-            <li className="nav-item">
-              <NavLink className="btn btn-primary mx-2" to="/signup" type="submit">Signup</NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="btn btn-primary" to="/login" type="submit">Login</NavLink>
-            </li>
-          </>
-          :
+        {localStorage.getItem("authToken") &&
           <li className="group nav-items">
             <button className='w-10 h-10 rounded-full bg-slate-400 flex justify-center items-center text-white group-focus-within:pointer-events-none'>{userName[0]}</button>
-            <div className="user-dropdown absolute top-12 right-4 rounded-xl shadow-md w-36 overflow-clip">
+            <div className="user-dropdown absolute top-[58px] right-4 rounded-xl shadow-md w-36 overflow-clip">
               <button className="btn hidden group-focus-within:block bg-white hover:bg-blue-500 hover:text-white p-3 w-full text-left" onClick={handleLogout}>Logout</button>
             </div>
 
-          </li>
-        }
+          </li>}
       </ul>
     </nav>
   )

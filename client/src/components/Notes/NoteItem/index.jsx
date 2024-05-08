@@ -43,7 +43,7 @@ const NoteItem = ({ note, loading, parent }) => {
             <motion.div onClick={handleDoubleClick} ref={scope} style={{ x, y, opacity: note.pending ? 0.4 : 1 }} drag dragConstraints={parent} dragElastic={0.1} whileDrag={{ scale: 1.1 }} className="w-full border border-[#e0e0e0] rounded-md overflow-hidden bg-white" >
                 <div className="relative px-3">
                     <ToggleNotePinned className="group-hover:block" noteId={note._id} isPinned={note.pinned} />
-                    <Notebody note={note}>
+                    <Notebody note={note} loading={loading}>
                         <Noteactions modifyObj={modifyObj} loading={loading} />
                     </Notebody>
                 </div>
@@ -53,16 +53,16 @@ const NoteItem = ({ note, loading, parent }) => {
     )
 }
 
-const Notebody = ({ note, children }) => {
+const Notebody = ({ note, children, loading }) => {
     return (
         <>
             <div className='cursor-pointer'>
                 {note.title || note.description ?
                     <>
-                        <h5 className="card-title pt-3 max-w-[90%] max-h-13 overflow-hidden text-ellipsis font-bold" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '2' }}>{note.title}</h5>
-                        <p className="card-text pt-3 max-h-20 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '3' }}>{note.description}</p>
+                        <h5 className="card-title pt-3 max-w-[90%] max-h-13 overflow-hidden text-ellipsis font-bold" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '2' }} dangerouslySetInnerHTML={{ __html: note.title }}></h5>
+                        <p className="card-text pt-3 max-h-20 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '3' }} dangerouslySetInnerHTML={{ __html: note.description }}></p>
                     </>
-                    : <p className="card-text py-3">Empty Note</p>
+                    : loading ? <Skeleton className='mt-2' count={2} /> : <p className="card-text py-3">Empty Note</p>
                 }
             </div>
             <div className='flex gap-1 flex-wrap mt-4'>
@@ -78,8 +78,6 @@ const Notebody = ({ note, children }) => {
 NoteItem.defaultProps = {
     note: {
         _id: uuid(),
-        title: <Skeleton />,
-        description: <Skeleton />,
         tag: [<Skeleton width={30} />]
     }
 }

@@ -58,7 +58,7 @@ const Addnote = React.memo(({ children, ...props }) => {
 
     return (
         <div {...props}>
-            <form ref={formRef} className='my-3 group rounded-lg shadow-custom overflow-hidden bg-white z-20 relative'>
+            <form ref={formRef} className='group rounded-lg shadow-custom overflow-hidden bg-white relative'>
                 <div className='hidden group-focus-within:block'>
                     <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' />
                 </div>

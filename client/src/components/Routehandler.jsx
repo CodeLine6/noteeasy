@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet, useNavigate, useLocation, } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, } from "react-router-dom";
 import Navbar from './Navbar';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
@@ -11,6 +11,7 @@ import Background from "./Background";
 import Forgetpassword from "../pages/Forgetpassword";
 import Resetpassword from "../pages/Resetpassword";
 import LoginSuccess from "../pages/LoginSuccess";
+import SearchProvider from "../context/SearchContext";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const Authcheck = ({ Comp }) => {
@@ -38,12 +39,12 @@ const Routehandler = () => {
                 <Route path="/" element={<>
                     <Background />
                     <div className="z-10 relative h-screen flex flex-col">
-                        <Navbar />
-                        <Outlet />
+                        <SearchProvider>
+                            <Navbar />
+                            <Home />
+                        </SearchProvider>
                     </div>
-                </>} >
-                    <Route index element={<Home />} />
-                </Route>
+                </>} />
                 <Route path="login" element={<Authcheck Comp={Login} />} />
                 <Route path="signup" element={<Authcheck Comp={Signup} />} />
                 <Route path="invite" element={<Invite />} />

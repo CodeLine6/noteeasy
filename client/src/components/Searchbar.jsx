@@ -5,7 +5,7 @@ import { SearchContext } from '../context/SearchContext'
 const Searchbar = () => {
     const { setSearchTerm } = React.useContext(SearchContext);
     return (
-        <Input placeholder="Search" name="title" styleType='notes' handleChange={e => setSearchTerm(e.target.value)} />
+        <Input placeholder="Search" name="title" styleType='notes' handleChange={e => setSearchTerm(e.target.value.trim())} />
     )
 }
 

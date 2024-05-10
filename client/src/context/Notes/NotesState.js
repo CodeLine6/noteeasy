@@ -105,7 +105,7 @@ const NotesState = (props) => {
         ? {
             ...note,
             title : titleInput.value,
-            description: descriptionInput.innerText,
+            description: descriptionInput,
             tag: tagInput
           }
         : note;
@@ -120,7 +120,7 @@ const NotesState = (props) => {
       },
       body: JSON.stringify({
         "title": titleInput.value,
-        "description": descriptionInput.innerText,
+        "description": descriptionInput,
         "tag": tagInput
       }),
     })

@@ -1,10 +1,9 @@
-import React, { useContext, useRef, useEffect, useLayoutEffect, useState, useMemo, } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import NotesContext from '../../context/Notes/NotesContext';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
 import { motion } from 'framer-motion';
 import TagInput from '../UI/TagInput';
-import { Editor } from 'novel-lightweight';
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
@@ -25,9 +24,9 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import Blockquote from '@tiptap/extension-blockquote'
 
-
 // Option 1: Browser + server-side
 import { generateJSON } from '@tiptap/html'
+import TailwindEditor from '../Editor/Editor';
 
 const extensions = [
     Document, Paragraph, Text, Bold, Heading, BulletList, ListItem, OrderedList, Italic, Link, Underline, Strike, Code, CodeBlock, HardBreak, Highlight, TaskItem, TaskList, Blockquote
@@ -38,40 +37,32 @@ const Updatenote = ({ resetPositions, controls, exitState }) => {
     const tags = useRef([]);
 
     const { updateNote, toModify, setToModify, editModal } = useContext(NotesContext);
-    const [description, setDescription] = useState(toModify.description.replace(/<mark[^>]*>|<\/mark>/g, ''));
+    const description = useRef(generateJSON(toModify.description.replace(/<mark[^>]*>|<\/mark>/g, ''), extensions));
 
     useEffect(() => {
         titleInput.current.value = toModify.title.replace(/<mark[^>]*>|<\/mark>/g, '');
     }, [])
 
-    const descriptionObj = useMemo(() => (
-        generateJSON(toModify.description.replace(/<mark[^>]*>|<\/mark>/g, ''), extensions)
-    ), [])
-
     const handleUpdate = async () => {
-        updateNote(toModify._id, titleInput.current, description, tags.current);
+        updateNote(toModify._id, titleInput.current, description.current, tags.current);
         resetPositions()
         await controls.start(exitState)
         editModal.current.close()
-        queueMicrotask(() => setToModify(null))
+        setToModify(null)
     }
 
     const handleClose = async () => {
         resetPositions()
         await controls.start(exitState)
         editModal.current.close()
-        queueMicrotask(() => setToModify(null))
+        setToModify(null)
     }
 
     return (
         <motion.form className='pb-10 relative' initial={{ opacity: 0 }} animate={{ opacity: 1 }} >
             <div className='max-h-96 overflow-x-auto pt-1 p-3'>
                 <Input inputRef={titleInput} placeholder='Title' name='title' styleType='notes' classes="font-bold" />
-                <Editor className='mb-0' defaultValue={descriptionObj}
-                    disableLocalStorage={true}
-                    onDebouncedUpdate={(editor) => {
-                        setDescription(editor.getHTML());
-                    }} />
+                <TailwindEditor initialContent={description.current} setContent={description} />
                 <TagInput initTags={toModify?.tag} customStyle="px-3" tagsValue={tags} />
             </div>
             <Button text="Close" className='rounded absolute right-24 bottom-2 px-4 py-2 hover:bg-[rgba(95,99,104,0.039)] active:bg-[rgba(95,99,104,0.161)] focus-visible:outline-none focus-visible:bg-[rgba(95,99,104,0.039)]' handleClick={handleClose} />

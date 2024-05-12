@@ -1,12 +1,18 @@
 import {
   TiptapImage,
   TiptapLink,
+  UpdatedImage,
   TaskList,
   TaskItem,
   HorizontalRule,
   StarterKit,
   Placeholder,
 } from "novel/extensions";
+
+import { cx } from "class-variance-authority";
+
+
+
 import {
   CheckSquare,
   Code,
@@ -20,8 +26,7 @@ import {
   TextQuote,
 } from "lucide-react";
 
-
-import { cx } from "class-variance-authority"; import { createSuggestionItems } from "novel/extensions";
+import { createSuggestionItems } from "novel/extensions";
 import { startImageUpload } from "novel/plugins";
 import { Command, renderItems } from "novel/extensions";
 
@@ -100,10 +105,14 @@ export const defaultExtensions = [
   placeholder,
   TiptapLink,
   TiptapImage,
+  UpdatedImage,
   taskList,
   taskItem,
   horizontalRule,
 ];
+
+
+
 export const suggestionItems = createSuggestionItems([
   {
     title: "Send Feedback",
@@ -227,3 +236,5 @@ export const slashCommand = Command.configure({
     render: renderItems,
   },
 });
+
+

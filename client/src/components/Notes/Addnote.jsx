@@ -3,12 +3,6 @@ import NotesContext from '../../context/Notes/NotesContext';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
 import TagInput from '../UI/TagInput';
-import { useEditor } from '@tiptap/react'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
-import Bold from '@tiptap/extension-bold'
-import Heading from '@tiptap/extension-heading'
 import TailwindEditor from '../Editor/Editor';
 
 
@@ -17,22 +11,14 @@ const Addnote = React.memo(({ children, ...props }) => {
 
     const formRef = useRef(null);
     const titleInputRef = useRef(null);
-    const [description, setDescription] = useState("");
+    const description = useRef(null);
+    const editor = useRef(null);
     const tags = useRef([]);
-    const editor = useEditor({
-        extensions: [
-            Document,
-            Paragraph,
-            Text,
-            Bold,
-            Heading
-        ],
-    })
 
     const resetInputs = () => {
         titleInputRef.current.value = '';
-        setDescription("");
-        editor.commands.clearContent();
+        description.current = null;
+        editor.current.commands.clearContent();
         tags.current = [];
     };
 
@@ -41,8 +27,8 @@ const Addnote = React.memo(({ children, ...props }) => {
         e?.target.blur();
         const title = titleInputRef.current;
         const tag = tags.current;
-        if (!description.trim().length && !title.value) return;
-        addNote(title.value, description, tag);
+        if ((!description.current || !description.current.replace("<p></p>", "")) && !title.value) return;
+        addNote(title.value, description.current, tag);
         resetInputs();
     };
 
@@ -78,7 +64,7 @@ const Addnote = React.memo(({ children, ...props }) => {
                 <div className='hidden group-focus-within:block'>
                     <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' />
                 </div>
-                <TailwindEditor className='min-h-[unset] py-0' setContent={setDescription} />
+                <TailwindEditor className='min-h-[unset] py-0' setContent={description} setEditor={editor} />
 
                 <div className='hidden group-focus-within:block'>
                     <TagInput initTags={tags.current} customStyle="px-3" tagsValue={tags} />

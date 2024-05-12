@@ -27,7 +27,7 @@ export function getUrlFromString(str) {
 
 
 export const LinkSelector = ({ open, onOpenChange }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef(null);
   const { editor } = useEditor();
 
   // Autofocus on input by default

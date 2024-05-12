@@ -15,13 +15,13 @@ const Modalcontent = ({ resetPositions, modalControls, exitState }) => {
 
     useEffect(() => {
         if (toModify)
-            queueMicrotask(() => {
+            setTimeout(() => {
                 if (heightRef.current) {
                     controls.set({ scaleY: heightRef.current / divRef.current.offsetHeight })
                     controls.start({ scaleY: 1 })
                 }
                 heightRef.current = divRef.current.offsetHeight
-            });
+            }, 50);
     }, [modifyComponent, toModify])
 
     useEffect(() => {

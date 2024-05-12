@@ -3,6 +3,8 @@ import NotesContext from '../../context/Notes/NotesContext';
 import NoteItem from './NoteItem';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SearchContext } from '../../context/SearchContext';
+import { Editor } from 'novel-lightweight';
+import TailwindEditor from '../Editor/Editor';
 
 
 const NotesList = () => {
@@ -13,13 +15,17 @@ const NotesList = () => {
     const generateLoadingArray = (length) => Array.from({ length }, (_, index) => index);
 
     const filteredNotes = useMemo(() => {
-        if (!searchTerm) return notes;
+        if (!searchTerm || searchTerm.includes('<') || searchTerm.includes('>')) return notes;
         return notes.filter(note => note.title.toLowerCase().includes(searchTerm.toLowerCase()) || note.description.toLowerCase().includes(searchTerm.toLowerCase())).map(
             note => {
-                let newTitle = note.title.replace(new RegExp(searchTerm, 'gi'), (match) => {
+                // look for searchterm in text which is not between < and >
+
+                let newTitle = note.title.replace(new RegExp(searchTerm + "(?![^<]*>)", 'gi'), (match) => {
                     return `<mark style="background-color: yellow;">${match}</mark>`
                 })
-                let newDescription = note.description.replace(new RegExp(searchTerm, 'gi'), (match) => {
+
+
+                let newDescription = note.description.replace(new RegExp(searchTerm + "(?![^<]*>)", 'gi'), (match) => {
                     return `<mark style="background-color: yellow;">${match}</mark>`
                 })
                 return {
@@ -45,7 +51,6 @@ const NotesList = () => {
             {loading && <div className="container mx-auto px-5 pt-5 flex flex-wrap items-start content-baseline flex-grow" >
                 {generateLoadingArray(15).map(g => <NoteItem key={g} loading />)}
             </div>}
-
 
             {pinnedNotes.length > 0 && <motion.div className='container mx-auto px-5 mb-5'>
                 <motion.h4 initial={{ opacity: 0 }} animate={{ opacity: 1 }} >PINNED</motion.h4>

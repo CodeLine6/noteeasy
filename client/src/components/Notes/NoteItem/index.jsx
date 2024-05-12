@@ -59,8 +59,8 @@ const Notebody = ({ note, children, loading }) => {
             <div className='cursor-pointer'>
                 {note.title || note.description ?
                     <>
-                        <h5 className="card-title pt-3 max-w-[90%] max-h-13 overflow-hidden text-ellipsis font-bold" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '2' }} dangerouslySetInnerHTML={{ __html: note.title }}></h5>
-                        <p className="card-text pt-3 max-h-20 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', '-webkit-box-orient': 'vertical', '-webkit-line-clamp': '3' }} dangerouslySetInnerHTML={{ __html: note.description }}></p>
+                        <h5 className="card-title pt-3 max-w-[90%] max-h-13 overflow-hidden text-ellipsis font-bold" style={{ display: '-webkit-box', 'WebkitBoxOrient': 'vertical', 'WebkitLineClamp': '2' }} dangerouslySetInnerHTML={{ __html: note.title }}></h5>
+                        <p className="card-text pt-3 max-h-20 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', 'WebkitBoxOrient': 'vertical', 'WebkitLineClamp': '3' }} dangerouslySetInnerHTML={{ __html: note.description }}></p>
                     </>
                     : loading ? <Skeleton className='mt-2' count={2} /> : <p className="card-text py-3">Empty Note</p>
                 }

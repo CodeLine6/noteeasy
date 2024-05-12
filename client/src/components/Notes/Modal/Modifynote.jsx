@@ -25,7 +25,7 @@ const ModifyNote = () => {
             resetPositions()
             await controls.start(exitState)
             editModal.current.close()
-            queueMicrotask(() => setToModify(null))
+            setToModify(null)
         }
     }
 
@@ -34,11 +34,9 @@ const ModifyNote = () => {
         return () => console.log("Modify Modal unmounted")
     }, [])
 
-    return <AnimatePresence key={toModify?._id}>
-        <motion.dialog ref={editModal} className="overflow-visible rounded-lg opacity-0 mt-[20vh] bg-transparent group" animate={controls} exit={exitState} onKeyDown={handleEscape}>
-            <Modalcontent resetPositions={resetPositions} modalControls={controls} exitState={exitState} />
-        </motion.dialog>
-    </AnimatePresence>
+    return <motion.dialog role="dialog" key={toModify?._id} ref={editModal} className="overflow-visible rounded-lg opacity-0 mt-[20vh] bg-transparent group" animate={controls} exit={exitState} onKeyDown={handleEscape}>
+        <Modalcontent resetPositions={resetPositions} modalControls={controls} exitState={exitState} />
+    </motion.dialog>
 }
 
 export default ModifyNote

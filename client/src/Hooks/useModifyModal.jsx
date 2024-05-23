@@ -18,7 +18,7 @@ const useModifyModal = () => {
             x: toModify.notePositions.translatedX,
             y: toModify.notePositions.translatedY,
             opacity: 1,
-        }, { type: "keyframes", })
+        }, { type: "Inertia", })
     }
 
     const exitState = () => ({
@@ -28,7 +28,7 @@ const useModifyModal = () => {
         y: -(topDifference.current - toModify.notePositions.translatedY),
         opacity: 0,
         transition: {
-            type: 'keyframes',
+            type: "Inertia",
         }
     })
 
@@ -53,7 +53,7 @@ const useModifyModal = () => {
                     y: topDifference.current,
                     opacity: 0,
                     transformOrigin: "top left",
-                }, { type: "keyframes", })
+                }, { type: "Inertia" })
 
                 controls.start({
                     x: 0,
@@ -63,7 +63,7 @@ const useModifyModal = () => {
                     opacity: 1,
                     transformOrigin: "top left",
                     transition: {
-                        type: "keyframes",
+                        type: "Inertia"
                     }
                 });
             }, 40)

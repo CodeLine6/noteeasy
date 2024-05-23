@@ -34,7 +34,7 @@ const ModifyNote = () => {
         return () => console.log("Modify Modal unmounted")
     }, [])
 
-    return <motion.dialog role="dialog" key={toModify?._id} ref={editModal} className="overflow-visible rounded-lg opacity-0 mt-[20vh] bg-transparent group" animate={controls} exit={exitState} onKeyDown={handleEscape}>
+    return <motion.dialog key={toModify?._id} ref={editModal} className="overflow-visible rounded-lg opacity-0 mt-[20vh] bg-transparent group" animate={controls} exit={exitState} onKeyDown={handleEscape}>
         <Modalcontent resetPositions={resetPositions} modalControls={controls} exitState={exitState} />
     </motion.dialog>
 }

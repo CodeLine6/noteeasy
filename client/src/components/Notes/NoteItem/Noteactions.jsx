@@ -11,7 +11,7 @@ const Noteactions = ({ modifyObj, loading }) => {
     const { setModifyComponent, modifyComponent } = useContext(ModalContext)
 
     return (
-        <div className='w-full opacity-0 group-hover:opacity-100 hover:opacity-100 transition text-lg text-slate-800 flex justify-end py-2 pr-2'>
+        <div className='w-full opacity-0 group-hover:opacity-100 transition text-lg text-slate-800 flex justify-end py-2 pr-2'>
             <Actionbutton loading={loading} Icon={VscEdit} handler={() => {
                 setToModify(modifyObj())
                 modifyComponent === 'addCollaborator' && setModifyComponent('update')

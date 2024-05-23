@@ -9,8 +9,7 @@ const notesSchema = new Schema({
         type : String,
     },
     description : {
-        type: String,
-        required: true
+        type: Object,
     },
     tag : [{
         type: String

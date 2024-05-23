@@ -12,7 +12,7 @@ const Notes = () => {
     return (
         <NotesState>
             <section className='w-11/12 sm:w-8/12 md:w-2/5 mt-10 mx-auto pb-5 flex gap-3 my-3'>
-                <Addnote className='w-full' />
+                <Addnote />
                 {/* <Search /> */}
             </section>
             <ModalState>

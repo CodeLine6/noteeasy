@@ -12,6 +12,7 @@ import Forgetpassword from "../pages/Forgetpassword";
 import Resetpassword from "../pages/Resetpassword";
 import LoginSuccess from "../pages/LoginSuccess";
 import SearchProvider from "../context/SearchContext";
+import { Toaster } from "sonner";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const Authcheck = ({ Comp }) => {
@@ -41,6 +42,7 @@ const Routehandler = () => {
                     <div className="z-10 relative h-screen flex flex-col">
                         <SearchProvider>
                             <Navbar />
+                            <Toaster theme={"light"} />
                             <Home />
                         </SearchProvider>
                     </div>

@@ -2,9 +2,9 @@ import { cn } from "../../../lib/utils";
 import { useEditor } from "novel";
 import { Check, Trash } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
+import {Portal,Content} from '@radix-ui/react-popover';
+import { Popover,PopoverTrigger } from "../../UI/popover";
 import { Button } from "../../UI/Button2";
-import { PopoverContent } from "../../UI/popover";
 
 export function isValidUrl(url) {
   try {
@@ -26,7 +26,7 @@ export function getUrlFromString(str) {
 }
 
 
-export const LinkSelector = ({ open, onOpenChange }) => {
+export const LinkSelector = ({ open, onOpenChange, containerRef }) => {
   const inputRef = useRef(null);
   const { editor } = useEditor();
 
@@ -49,7 +49,8 @@ export const LinkSelector = ({ open, onOpenChange }) => {
           </p>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='start' className='w-60 p-0' sideOffset={10}>
+      <Portal container={containerRef.current}>
+      <Content align='start' className='w-60 p-0' sideOffset={10}>
         <form
           onSubmit={(e) => {
             const target = e.currentTarget;
@@ -57,6 +58,7 @@ export const LinkSelector = ({ open, onOpenChange }) => {
             const input = target[0] ;
             const url = getUrlFromString(input.value);
             url && editor.chain().focus().setLink({ href: url }).run();
+            onOpenChange(false);
           }}
           className='flex  p-1 '>
           <input
@@ -74,6 +76,7 @@ export const LinkSelector = ({ open, onOpenChange }) => {
               className='flex h-8 items-center rounded-sm p-1 text-red-600 transition-all hover:bg-red-100 dark:hover:bg-red-800'
               onClick={() => {
                 editor.chain().focus().unsetLink().run();
+                onOpenChange(false);
               }}>
               <Trash className='h-4 w-4' />
             </Button>
@@ -83,7 +86,8 @@ export const LinkSelector = ({ open, onOpenChange }) => {
             </Button>
           )}
         </form>
-      </PopoverContent>
+      </Content>
+      </Portal>
     </Popover>
   );
 };

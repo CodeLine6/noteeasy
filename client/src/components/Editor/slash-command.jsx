@@ -173,9 +173,29 @@ export const suggestionItems = createSuggestionItems([
     },
 ]);
 
+const renderItemsCustom = (targetEl) => {
+    return dummyFunction;
+    //document.querySelector("[data-tippy-root]")?.appendTo(targetEl.current);
+}
+
+function dummyFunction() {
+    alert("hello")
+}
 export const slashCommand = (targetEl) => Command.configure({
     suggestion: {
         items: () => suggestionItems,
-        render: () => renderItems(targetEl),
+        render: () => {
+            const renderItemsContent = renderItems()
+            return {
+                onUpdate: renderItemsContent.onUpdate,
+                onKeyDown: renderItemsContent.onKeyDown,
+                onExit: renderItemsContent.onExit,
+                onStart: (props) => {
+                    renderItemsContent.onStart(props)
+                    targetEl.current.append(document.querySelector("[data-tippy-root]"))
+                }
+            }
+        },
+
     },
 });

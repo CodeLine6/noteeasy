@@ -5,7 +5,7 @@ import Addcollaborator from '../Addcollaborator'
 import { useAnimationControls, motion } from 'framer-motion'
 import NotesContext from '../../../context/Notes/NotesContext'
 
-const Modalcontent = ({ resetPositions, modalControls, exitState }) => {
+const Modalcontent = ({ closeModalAnimation }) => {
 
     const { modifyComponent } = useContext(ModalContext)
     const { toModify } = useContext(NotesContext);
@@ -26,15 +26,12 @@ const Modalcontent = ({ resetPositions, modalControls, exitState }) => {
 
     useEffect(() => {
         console.log('Modal content mounted')
-        return () => {
-            console.log('Modal content unmounted')
-        }
     }, [])
 
     return (
         <>
             {toModify && <motion.div ref={divRef} className="rounded-lg bg-white w-[600px] relative" style={{ transformOrigin: "top left" }} animate={controls}>
-                {modifyComponent === 'update' ? <Updatenote resetPositions={resetPositions} controls={modalControls} exitState={exitState} /> : <Addcollaborator key={toModify._id} />}
+                {modifyComponent === 'update' ? <Updatenote closeModalAnimation={closeModalAnimation} /> : <Addcollaborator key={toModify._id} />}
             </motion.div>}
         </>
     )

@@ -4,25 +4,27 @@ import Input from '../UI/Input';
 import Button from '../UI/Button';
 import TagInput from '../UI/TagInput';
 import TailwindEditor from '../Editor/Editor';
-import { useState } from 'react';
-
 
 const Addnote = () => {
-    const { addNote } = useContext(NotesContext);
+    const { addNote, addNoteKey } = useContext(NotesContext);
 
     const formWrapperRef = useRef(null);
     const titleInputRef = useRef(null);
+    const newNoteDescriptionEditorInstance = useRef(null);
     const description = useRef(null);
     const tags = useRef([]);
     const resetTags = useRef(null);
-    const [editoryKey, setEditorKey] = useState(0)
-    const [active, setActive] = useState(false)
 
     const resetInputs = () => {
         titleInputRef.current.value = null;
         description.current = null;
         tags.current = [];
         resetTags.current();
+        newNoteDescriptionEditorInstance.current.editor.commands.clearContent();
+        newNoteDescriptionEditorInstance.current.setWordsCount({
+            words: 0,
+            characters: 0
+        })
     };
 
     const handleAdd = (e) => {
@@ -35,7 +37,6 @@ const Addnote = () => {
 
     const documentListener = (e) => {
         if (!formWrapperRef.current.contains(e.target)) {
-            setActive(false)
             handleAdd();
             formWrapperRef.current.removeAttribute('form-clicked');
             document.removeEventListener('mousedown', documentListener);
@@ -60,25 +61,14 @@ const Addnote = () => {
 
     console.log("Add note component");
 
-    const handleFocus = () => {
-        if (active) return
-        setEditorKey(prev => prev + 1)
-        setActive(true)
-    }
-
-    const handleBlur = () => {
-        if (formWrapperRef.current.getAttribute('form-clicked')) return
-        setActive(false)
-    }
-
 
     return (
-        <div className='group w-full' ref={formWrapperRef} onMouseEnter={handleFocus} onMouseLeave={handleBlur} >
+        <div className='group w-full' ref={formWrapperRef} >
             <form className='rounded-lg shadow-custom overflow-hidden bg-white relative' >
-                <div>
+                <div className='hidden group-focus-within:block'>
                     <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' value={null} />
                 </div>
-                <TailwindEditor key={`${editoryKey}`} setContent={description} className='hidden group-focus-within:block' parent={formWrapperRef} />
+                <TailwindEditor key={`${addNoteKey}`} content={description} parent={formWrapperRef} editorInstance={newNoteDescriptionEditorInstance} />
                 <div className='hidden group-focus-within:block'>
                     <TagInput customStyle="px-3" tagsValue={tags} resetTagsRef={resetTags} />
                 </div>

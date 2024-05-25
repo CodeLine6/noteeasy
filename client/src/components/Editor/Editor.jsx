@@ -12,7 +12,7 @@ import { onDelete, uploadFn } from "./editor-image";
 import './Prosemirror.css';
 import { useDebouncedCallback } from "use-debounce";
 
-const TailwindEditor = ({ initialContent = "", setContent, parent, className }) => {
+const TailwindEditor = ({ initialContent = "", content, parent, className, editorInstance = null }) => {
     const [openLink, setOpenLink] = useState(null);
     const [openColor, setOpenColor] = useState(false);
     const [openNode, setOpenNode] = useState(null);
@@ -42,15 +42,15 @@ const TailwindEditor = ({ initialContent = "", setContent, parent, className }) 
 
     return (
         <div className={`relative w-full max-w-screen-lg ${className}`}>
-            <div className="flex absolute right-5 -top-5 z-10 mb-5 gap-2">
-                <div className={"rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground"}>
+            <div className="flex absolute right-5 top-1 z-10 mb-5 gap-2">
+                <div className={wordsCount.words ? "rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground" : "hidden"}>
                     {wordsCount.words} Words
                 </div>
-                <div className={"rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground"}>
+                <div className={wordsCount.characters ? "rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground" : "hidden"}>
                     {wordsCount.characters} Chars
                 </div>
             </div>
-            <EditorRoot >
+            <EditorRoot>
                 <EditorContent
                     initialContent={initialContent}
                     extensions={[...defaultExtensions, slashCommand(parent)]}
@@ -59,6 +59,7 @@ const TailwindEditor = ({ initialContent = "", setContent, parent, className }) 
                         handleDOMEvents: {
                             keydown: (_view, event) => handleCommandNavigation(event),
                         },
+                        autofocus: false,
                         attributes: {
                             class: `prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full`,
                         },
@@ -67,9 +68,8 @@ const TailwindEditor = ({ initialContent = "", setContent, parent, className }) 
                             handleImageDrop(view, event, moved, uploadFn),
 
                     }}
-                    onUpdate={({ editor, transaction }) => {
-                        const html = editor.getJSON();
-                        setContent.current = html;
+                    onUpdate={({ editor }) => {
+                        content.current = editor.getJSON();
 
                         const currentImages = getImageNodes(editor.state.doc);
 
@@ -90,17 +90,23 @@ const TailwindEditor = ({ initialContent = "", setContent, parent, className }) 
                         debouncedUpdates(editor)
                     }}
                     onCreate={({ editor }) => {
-                        const html = editor.getJSON();
-                        editor.chain().focus().run()
-                        setContent.current = html;
+                        content.current = editor.getJSON();
 
                         const currentImages = getImageNodes(editor.state.doc);
                         setPreviousImages(currentImages);
 
                         debouncedUpdates(editor)
+                        initialContent == "" && setTimeout(() => {
+                            parent.current.style.minHeight = parent.current.offsetHeight + 'px';
+                        })
+                        if (!editorInstance) return
+                        editorInstance.current = {
+                            editor,
+                            setWordsCount
+                        }
                     }}
                     slotAfter={<ImageResizer />}>
-                    <EditorCommand className='z-50 h-auto max-h-[330px]  w-72 overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all'>
+                    <EditorCommand tabIndex={1} className='z-50 h-auto max-h-[330px]  w-72 overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all'>
                         <EditorCommandEmpty className='px-2 text-muted-foreground'>No results</EditorCommandEmpty>
                         <EditorCommandList>
                             {suggestionItems.map((item) => (

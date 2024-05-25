@@ -12,7 +12,7 @@ const NoteItem = ({ note, loading, parent }) => {
     const x = useMotionValue(0)
     const y = useMotionValue(0)
     const { setToModify } = useContext(NotesContext);
-    const { setModifyComponent, modifyComponent } = useContext(ModalContext)
+    const { setModifyComponent } = useContext(ModalContext)
     const [scope, animate] = useAnimate()
 
     const modifyObj = () => {
@@ -31,7 +31,7 @@ const NoteItem = ({ note, loading, parent }) => {
         // check if element is double clicked
         if (e.detail === 2) {
             setToModify(modifyObj())
-            modifyComponent === 'addCollaborator' && setModifyComponent('update')
+            setModifyComponent('update')
         }
 
     }

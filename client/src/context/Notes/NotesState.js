@@ -8,6 +8,7 @@ const NotesState = (props) => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toModify, setToModify] = useState(null);
+  const [addNoteKey, setAddNoteKey] = useState(Date.now());
   const editModal = useRef(null);
 
   useEffect(() => {
@@ -275,7 +276,7 @@ const NotesState = (props) => {
 }
 
   return (
-    <NotesContext.Provider value={{ notes, toModify, editModal, loading, getNotes,addNote, deleteNote, updateNote, setToModify, duplicateNote, toggleNotePinned, addCollaborator }}>
+    <NotesContext.Provider value={{ notes, toModify, editModal, loading, addNoteKey,getNotes,addNote, deleteNote, updateNote, setToModify, duplicateNote, toggleNotePinned, addCollaborator, setAddNoteKey }}>
     {props.children}
   </NotesContext.Provider>
 );

@@ -12,16 +12,22 @@ import { onDelete, uploadFn } from "./editor-image";
 import './Prosemirror.css';
 import { useDebouncedCallback } from "use-debounce";
 
-const TailwindEditor = ({ initialContent = "", setContent, editorData = null, parent }) => {
+const TailwindEditor = ({ initialContent = "", setContent, parent, className }) => {
     const [openLink, setOpenLink] = useState(null);
     const [openColor, setOpenColor] = useState(false);
     const [openNode, setOpenNode] = useState(null);
-    const [charsCount, setCharsCount] = useState(0);
+    const [wordsCount, setWordsCount] = useState({
+        words: 0,
+        characters: 0
+    });
     const [previousImages, setPreviousImages] = useState([]);
     const bubbleRef = useRef(null)
 
     const debouncedUpdates = useDebouncedCallback(async (editor) => {
-        setCharsCount(editor.storage.characterCount.words());
+        setWordsCount({
+            words: editor.storage.characterCount.words(),
+            characters: editor.storage.characterCount.characters()
+        });
     }, 500);
 
     const getImageNodes = doc => {
@@ -35,16 +41,20 @@ const TailwindEditor = ({ initialContent = "", setContent, editorData = null, pa
     };
 
     return (
-        <div className="relative w-full max-w-screen-lg">
-            <div className="flex absolute right-5 top-5 z-10 mb-5 gap-2">
-                <div className={charsCount ? "rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground" : "hidden"}>
-                    {charsCount} Words
+        <div className={`relative w-full max-w-screen-lg ${className}`}>
+            <div className="flex absolute right-5 -top-5 z-10 mb-5 gap-2">
+                <div className={"rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground"}>
+                    {wordsCount.words} Words
+                </div>
+                <div className={"rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground"}>
+                    {wordsCount.characters} Chars
                 </div>
             </div>
-            <EditorRoot>
+            <EditorRoot >
                 <EditorContent
                     initialContent={initialContent}
                     extensions={[...defaultExtensions, slashCommand(parent)]}
+                    autofocus={false}
                     editorProps={{
                         handleDOMEvents: {
                             keydown: (_view, event) => handleCommandNavigation(event),
@@ -55,12 +65,11 @@ const TailwindEditor = ({ initialContent = "", setContent, editorData = null, pa
                         handlePaste: (view, event) => handleImagePaste(view, event, uploadFn),
                         handleDrop: (view, event, _slice, moved) =>
                             handleImageDrop(view, event, moved, uploadFn),
+
                     }}
-                    className="outline-none border-none"
                     onUpdate={({ editor, transaction }) => {
                         const html = editor.getJSON();
                         setContent.current = html;
-                        debouncedUpdates(editor)
 
                         const currentImages = getImageNodes(editor.state.doc);
 
@@ -74,23 +83,21 @@ const TailwindEditor = ({ initialContent = "", setContent, editorData = null, pa
                                 onDelete(image.attrs.src);
                             });
                         }
-
                         // Update the previous state to the current state
                         setPreviousImages(currentImages);
                         console.log(JSON.stringify(editor.getJSON()))
+
+                        debouncedUpdates(editor)
                     }}
                     onCreate={({ editor }) => {
                         const html = editor.getJSON();
+                        editor.chain().focus().run()
                         setContent.current = html;
 
                         const currentImages = getImageNodes(editor.state.doc);
                         setPreviousImages(currentImages);
 
-                        if (!editorData) return
-                        editorData.current = {
-                            editor,
-                            setCharsCount
-                        };
+                        debouncedUpdates(editor)
                     }}
                     slotAfter={<ImageResizer />}>
                     <EditorCommand className='z-50 h-auto max-h-[330px]  w-72 overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all'>

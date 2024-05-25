@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { IoCloseSharp } from "react-icons/io5";
 
 
-const TagInput = ({ customStyle, tagsValue, tagsSetter = null }) => {
+const TagInput = ({ customStyle, tagsValue, resetTagsRef = null }) => {
     const [tags, setTags] = useState(tagsValue.current)
-    if (tagsSetter) tagsSetter.current = setTags;
+
     const addTag = (e) => {
         if (!e.target.value.trim()) return
         let newTag = e.target.value.trim();
@@ -33,6 +33,9 @@ const TagInput = ({ customStyle, tagsValue, tagsSetter = null }) => {
         setTags(updatedTags)
         tagsValue.current = updatedTags
     }
+
+    const resetTags = () => setTags([])
+    if (resetTagsRef) resetTagsRef.current = resetTags;
 
     return (
         <div id='tags-container' className={`flex flex-wrap gap-2 ${customStyle}`}>

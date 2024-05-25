@@ -17,7 +17,9 @@ import { cx } from "class-variance-authority";
 import TextStyle from "@tiptap/extension-text-style";
 
 const aiHighlight = AIHighlight;
-const placeholder = Placeholder;
+const placeholder = Placeholder.configure({
+  placeholder: "Type '/' for commands",
+});
 const tiptapLink = TiptapLink.configure({
   HTMLAttributes: {
     class: cx(

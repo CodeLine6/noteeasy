@@ -55,12 +55,13 @@ const Notebody = ({ note, children, loading }) => {
     return (
         <>
             <div className='cursor-pointer flex-grow'>
-                {note.title || note.description ?
-                    <>
-                        <h5 className="card-title pt-3 max-w-[90%] max-h-13 overflow-hidden text-ellipsis font-bold" style={{ display: '-webkit-box', 'WebkitBoxOrient': 'vertical', 'WebkitLineClamp': '2' }} dangerouslySetInnerHTML={{ __html: note.title }}></h5>
-                        <p className="card-text pt-3 max-h-20 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', 'WebkitBoxOrient': 'vertical', 'WebkitLineClamp': '3' }} dangerouslySetInnerHTML={{ __html: note.noteDescriptionHTML }}></p>
-                    </>
-                    : loading ? <Skeleton className='mt-2' count={2} /> : <p className="card-text py-3">Empty Note</p>
+                {loading ? <Skeleton className='mt-2' count={2} /> :
+                    note.title || note.noteDescriptionHTML.replace("<p></p>", "").length ?
+                        <>
+                            <h5 className="card-title pt-3 max-w-[90%] max-h-13 overflow-hidden text-ellipsis font-bold" style={{ display: '-webkit-box', 'WebkitBoxOrient': 'vertical', 'WebkitLineClamp': '2' }}>{note.title}</h5>
+                            <p className="card-text pt-3 max-h-20 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', 'WebkitBoxOrient': 'vertical', 'WebkitLineClamp': '3' }} dangerouslySetInnerHTML={{ __html: note.noteDescriptionHTML }} />
+                        </>
+                        : <p className="card-text py-3">Empty Note</p>
                 }
             </div>
             <div className='flex gap-1 flex-wrap mt-4'>
@@ -76,6 +77,7 @@ const Notebody = ({ note, children, loading }) => {
 NoteItem.defaultProps = {
     note: {
         _id: uuid(),
+
         tag: [<Skeleton width={30} />]
     }
 }

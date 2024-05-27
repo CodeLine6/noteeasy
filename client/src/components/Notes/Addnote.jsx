@@ -30,7 +30,8 @@ const Addnote = () => {
     const handleAdd = (e) => {
         e?.preventDefault();
         e?.target.blur();
-        const title = titleInputRef.current.value !== '' ? titleInputRef.current.value : 'Untitled';
+        const title = titleInputRef.current.value;
+        if (newNoteDescriptionEditorInstance.current.editor.getText() === '') return
         addNote(title, description.current, tags.current);
         resetInputs();
     };

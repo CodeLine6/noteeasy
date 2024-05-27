@@ -36,7 +36,14 @@ const convertJSONtoHTML = (html) => {
     Youtube,
     TextStyle
   ])
-  return jsonContent
+
+  return htmlToText(jsonContent)
+}
+
+function htmlToText(html) {
+  var temp = document.createElement('div');
+  temp.innerHTML = html;
+  return temp.textContent; // Or return temp.innerText if you need to return only visible text. It's slower.
 }
 
 export default convertJSONtoHTML

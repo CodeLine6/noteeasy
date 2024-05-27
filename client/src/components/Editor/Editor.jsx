@@ -12,7 +12,7 @@ import { onDelete, uploadFn } from "./editor-image";
 import './Prosemirror.css';
 import { useDebouncedCallback } from "use-debounce";
 
-const TailwindEditor = ({ initialContent = "", content, parent, className, editorInstance = null }) => {
+const Editor = ({ initialContent = "", content, parent, className, editorInstance = null }) => {
     const [openLink, setOpenLink] = useState(null);
     const [openColor, setOpenColor] = useState(false);
     const [openNode, setOpenNode] = useState(null);
@@ -142,4 +142,4 @@ const TailwindEditor = ({ initialContent = "", content, parent, className, edito
         </div>
     );
 };
-export default TailwindEditor;
+export default Editor;

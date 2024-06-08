@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import NotesContext from "./NotesContext";
 import { v4 as uuid } from 'uuid';
 import { toast } from "sonner";
+import { useAuth } from "../authContext";
 
 const NotesState = (props) => {
   const API_HOST = process.env.REACT_APP_API_HOST;
@@ -10,6 +11,7 @@ const NotesState = (props) => {
   const [toModify, setToModify] = useState(null);
   const [addNoteKey, setAddNoteKey] = useState(Date.now());
   const editModal = useRef(null);
+  const {user:currentUser} = useAuth();
 
   useEffect(() => {
     getNotes().then(d => {
@@ -270,13 +272,44 @@ const NotesState = (props) => {
       });
       setNotes(updatedNotes);
     }).catch(e => {
-
+      console.log(e);
     })
   
 }
 
+const removeCollaborator = async (collaboratorId) => {
+  const response = await fetch(`${API_HOST}/api/notes/removecollaborator/${toModify._id}`, {
+      method: "PATCH",
+      headers: {
+          "auth-token": localStorage.getItem('authToken'),
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+          collaboratorId
+      })
+  })
+
+  if(!(response.ok)) return
+  
+  const parsedResponse = await response.json()
+
+    const currNotes = [...notes];
+    const isCurrUserOwner = currentUser._id === toModify.user._id
+    if(isCurrUserOwner) {
+      const modifiedNoteIndex = currNotes.findIndex(note => note._id === toModify._id);
+      currNotes.splice(modifiedNoteIndex, 1, parsedResponse); 
+      setToModify(parsedResponse)
+      setNotes(currNotes);
+    } else {
+      const updatedNotes = currNotes.filter(note => note._id !== toModify._id)
+      setNotes(updatedNotes)
+      setToModify(null)
+    }
+
+}
+
   return (
-    <NotesContext.Provider value={{ notes, toModify, editModal, loading, addNoteKey,getNotes,addNote, deleteNote, updateNote, setToModify, duplicateNote, toggleNotePinned, addCollaborator, setAddNoteKey }}>
+    <NotesContext.Provider value={{ notes, toModify, editModal, loading, addNoteKey,getNotes,addNote, deleteNote, updateNote, setToModify, duplicateNote, toggleNotePinned, addCollaborator, removeCollaborator,setAddNoteKey }}>
     {props.children}
   </NotesContext.Provider>
 );

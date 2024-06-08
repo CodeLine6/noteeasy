@@ -15,6 +15,7 @@ import {
   Youtube,
 } from "novel/extensions";
 import TextStyle from "@tiptap/extension-text-style";
+import Underline from "@tiptap/extension-underline";
 
 
 export function cn(...inputs) {
@@ -22,22 +23,23 @@ export function cn(...inputs) {
 }
 
 const convertJSONtoHTML = (html) => {
-  const jsonContent = generateHTML(html, [
-    TiptapImage,
+  const htmlContent = generateHTML(html, [
+    StarterKit,
+    Placeholder,
     TiptapLink,
-    CharacterCount,
+    TiptapImage,
     UpdatedImage,
     TaskList,
     TaskItem,
     HorizontalRule,
-    StarterKit,
-    Placeholder,
     AIHighlight,
     Youtube,
-    TextStyle
+    CharacterCount,
+    TextStyle,
+    Underline
   ])
 
-  return htmlToText(jsonContent)
+  return htmlToText(htmlContent)
 }
 
 function htmlToText(html) {

@@ -6,22 +6,22 @@ import { VscEdit, VscTrash } from "react-icons/vsc";
 import { FiUserPlus } from "react-icons/fi";
 import { ModalContext } from '../../../context/Modal/ModalContext';
 
-const Noteactions = ({ modifyObj, loading }) => {
+const Noteactions = ({ note, loading }) => {
     const { deleteNote, setToModify, duplicateNote } = useContext(NotesContext);
     const { setModifyComponent, modifyComponent } = useContext(ModalContext)
 
     return (
         <div className='w-full opacity-0 group-hover:opacity-100 transition text-lg text-slate-800 flex justify-end py-2 pr-2'>
             <Actionbutton loading={loading} Icon={VscEdit} handler={() => {
-                setToModify(modifyObj())
+                setToModify(note)
                 modifyComponent === 'addCollaborator' && setModifyComponent('update')
             }} />
             <Actionbutton loading={loading} Icon={FiUserPlus} handler={() => {
-                setToModify(modifyObj())
+                setToModify(note)
                 setModifyComponent('addCollaborator')
             }} />
-            <Actionbutton loading={loading} Icon={IoCopyOutline} handler={() => duplicateNote(modifyObj()._id)} />
-            <Actionbutton loading={loading} Icon={VscTrash} handler={() => deleteNote(modifyObj()._id)} />
+            <Actionbutton loading={loading} Icon={IoCopyOutline} handler={() => duplicateNote(note._id)} />
+            <Actionbutton loading={loading} Icon={VscTrash} handler={() => deleteNote(note._id)} />
         </div>
     )
 }

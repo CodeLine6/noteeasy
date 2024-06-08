@@ -6,4 +6,4 @@ const server = new Hocuspocus({
 });
 
 // … and run it!
-module.exports = () => server.listen();
+server.listen();

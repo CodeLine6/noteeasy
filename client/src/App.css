@@ -1,42 +1,3 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 .toast-success,
 .toast-warning,
@@ -101,4 +62,7 @@
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAGBQTFRFAAAAp9Cnj8SParBqgr2Cos6ip9GnfLp8UaNRWadZf7t/YKtgoc2hoc2hpdCli8KLcLNwjMKMptCmhr+Gos6insuemMiYcrRyVKRUbLFsfbp9iMCIkcWRmcmZn8yferl6AABjogAAACB0Uk5TABCv99g8COP//t79Q0ofwPO8F841XYfx//bhx6Z8V+YPzlKmAAAAbElEQVR4nLXQSQ6AMAgFULQO4Dxb63T/W2q6cNHCxuhfwUsDpAC/JghVFDOepIiYCo4kOGaC54Xg5Ruv6qbtuPf9XaqBmaNsM/rza9vS5O3tZgt68e4JDD5x7lwFB9g07wA78Q5wnGTcf/ssF2bCBzEtTxqFAAAAAElFTkSuQmCC) !important;
 
   }
+}
+.tiptap.ProseMirror {
+  outline: none;
 }

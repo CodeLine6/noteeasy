@@ -3,6 +3,7 @@ import NotesList from './NotesList';
 import ModifyNote from './Modal/Modifynote';
 import NotesState from '../../context/Notes/NotesState';
 import ModalState from '../../context/Modal/ModalContext';
+import Search from './OptionsDialog';
 
 
 const Notes = () => {
@@ -10,7 +11,10 @@ const Notes = () => {
     console.log("Notes Component")
     return (
         <NotesState>
-            <Addnote className="w-4/5 md:w-2/5 mt-10 mx-auto pb-5" />
+            <section className='w-11/12 sm:w-8/12 md:w-2/5 mt-10 mx-auto pb-5 flex gap-3 my-3'>
+                <Addnote />
+                {/* <Search /> */}
+            </section>
             <ModalState>
                 <ModifyNote />
                 <NotesList />
@@ -18,6 +22,7 @@ const Notes = () => {
         </NotesState>
     )
 }
+
 
 export default Notes
 

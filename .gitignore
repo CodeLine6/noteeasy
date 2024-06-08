@@ -1,6 +1,6 @@
 node_modules
 .env
-Dockerfile
 .dockerignore
+Dockerfile
 backend/temp.js
 backend/image.jpg

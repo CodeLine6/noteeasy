@@ -1,15 +1,15 @@
-import React, { useContext, useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import NotesContext from "./NotesContext";
-import AlertContext from "../Alert/AlertContext";
 import { v4 as uuid } from 'uuid';
+import { toast } from "sonner";
 
 const NotesState = (props) => {
   const API_HOST = process.env.REACT_APP_API_HOST;
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toModify, setToModify] = useState(null);
+  const [addNoteKey, setAddNoteKey] = useState(Date.now());
   const editModal = useRef(null);
-  const setAlerts = useContext(AlertContext);
 
   useEffect(() => {
     getNotes().then(d => {
@@ -36,7 +36,7 @@ const NotesState = (props) => {
   };
 
   // Add a note
-  const addNote = useCallback((title, description, tag) => {
+  const addNote = (title, description, tag) => {
     const lId = uuid();
     const tempNewNote = {
       title, description, tag, pinned: false, _id: null, lId, pending: true
@@ -44,7 +44,7 @@ const NotesState = (props) => {
 
     setNotes(prevNotes => [...prevNotes, tempNewNote]);
 
-    fetch(`${API_HOST}/api/notes/addnote`, {
+    const addNoteRequest = fetch(`${API_HOST}/api/notes/addnote`, {
       method: "POST",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -55,47 +55,70 @@ const NotesState = (props) => {
         "description": description,
         "tag": tag
       }),
-    }).then(r => {
-      if (r.ok) {
-        r.json().then(data => {
-          setNotes(prev => prev.slice(0, -1).concat({ ...data, lId }));
-          setAlerts({ type: "success", message: "Note Added" });
-        });
-      } else {
-        setNotes(prev => prev.slice(0, -1));
-        r.json().then(data => {
-          setAlerts({ type: "error", message: data.message });
-        });
-      }
-    }).catch(e => {
-      setNotes(prev => prev.slice(0, -1));
-      setAlerts({ type: "error", message: "Something went wrong. Please try again" });
-    });
-  }, []);
+    })
+
+    return new Promise((resolve, reject) => {
+      toast.promise(
+        addNoteRequest.then(async r => {
+          if (r.ok) {
+            const newNote = await r.json();
+            setNotes(prev => prev.slice(0, -1).concat({ ...newNote, lId }));
+            resolve();
+          } else throw new Error("Failed to Add Note. Please try again.");
+
+        }).catch(e => {
+          resolve()
+          throw new Error("Failed to Add Note. Please try again.");
+        }),
+        {
+          loading: "Adding Note...",
+          success: "Note Added Successfully",
+          error: (e) => {
+            setNotes(prev => prev.slice(0, -1));
+            reject(e);
+            return e.message;
+          }
+        }
+      )
+    })
+  }
 
   // Delete a note
   const deleteNote = (id) => {
     const updatedNotes = notes.filter((note) => note._id !== id);
     setNotes(updatedNotes);
 
-    fetch(`${API_HOST}/api/notes/deletenote/${id}`, {
+    const deleteRequest = fetch(`${API_HOST}/api/notes/deletenote/${id}`, {
       method: "DELETE",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
         "Content-Type": "application/json"
       },
-    })
-    .then(async (response) => {
-      if (response.ok) {
-        setAlerts({ type: "success", message: "Note Deleted" });
-      } else {
-        throw await response.json();
-      }
-    })
-    .catch((error) => {
-      setNotes([...notes]); // Revert changes
-      setAlerts({ type: "error", message: error.message || "Something went wrong. Please try again." });
     });
+
+    return new Promise((resolve, reject) => {
+      toast.promise(
+        deleteRequest.then(async (res) => {
+          if (res.ok) {
+            resolve();
+          } else {
+            throw new Error("Failed to Delete Note. Please try again.");
+          }
+        }).catch(e => {
+          resolve()
+          throw new Error("Failed to Delete Note. Please try again.");
+        }),
+        {
+          loading: "Deleting Note...",
+          success: "Note Deleted Successfully",
+          error: (e) => {
+            setNotes([...notes]); // Revert changes
+            reject(e);
+            return e.message;
+          },
+        }
+      )
+    })
   }
 
   // Update a note
@@ -105,14 +128,14 @@ const NotesState = (props) => {
         ? {
             ...note,
             title : titleInput.value,
-            description: descriptionInput.innerText,
+            description: descriptionInput,
             tag: tagInput
           }
         : note;
     });
     setNotes(updatedNotes);
 
-    fetch(`${API_HOST}/api/notes/updatenote/${id}`, {
+    const updateRequest = fetch(`${API_HOST}/api/notes/updatenote/${id}`, {
       method: "PUT",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -120,21 +143,34 @@ const NotesState = (props) => {
       },
       body: JSON.stringify({
         "title": titleInput.value,
-        "description": descriptionInput.innerText,
+        "description": descriptionInput,
         "tag": tagInput
       }),
     })
-    .then(async (response) => {
-      if (response.ok) {
-        setAlerts({ type: "success", message: "Note Updated" });
-      } else {
-        throw await response.json();
-      }
+
+    return new Promise((resolve, reject) => {
+      toast.promise(
+        updateRequest.then(async (res) => {
+          if (res.ok) {
+            resolve();
+          } else {
+            throw new Error("Failed to Update Note. Please try again.");
+          }
+        }).catch(e => {
+          resolve()
+          throw new Error("Failed to Update Note. Please try again.");
+        }),
+        {
+          loading: "Updating Note...",
+          success: "Note Updated Successfully",
+          error: (e) => {
+            setNotes([...notes]); // Revert changes
+            reject(e);
+            return e.message;
+          },
+        }
+      )
     })
-    .catch((error) => {
-      setNotes([...notes]); // Revert changes
-      setAlerts({ type: "error", message: error.message || "Something went wrong. Please try again." });
-    });
   }
 
   //Duplicate a Note
@@ -142,20 +178,18 @@ const NotesState = (props) => {
     const noteToDuplicate = notes.find(note => note._id === noteId);
     if (!noteToDuplicate) return;
 
-    const lId = uuid();
     const tempNewNote = {
       title: noteToDuplicate.title,
       description: noteToDuplicate.description,
       tag: noteToDuplicate.tag,
       pinned: false,
       _id: null,
-      lId,
       pending: true
     };
 
     setNotes(prevNotes => [...prevNotes, tempNewNote]);
 
-    fetch(`${API_HOST}/api/notes/addnote`, {
+    const duplicateNoteRequest = fetch(`${API_HOST}/api/notes/addnote`, {
       method: "POST",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -166,22 +200,30 @@ const NotesState = (props) => {
         "description": noteToDuplicate.description,
         "tag": noteToDuplicate.tag
       }),
-    }).then(r => {
-      if (r.ok) {
-        r.json().then(data => {
-          setNotes(prevNotes => prevNotes.map(note => (note.lId === lId ? { ...data, lId } : note)));
-          setAlerts({ type: "success", message: "Note Added" });
-        });
-      } else {
-        setNotes(prevNotes => prevNotes.filter(note => note.lId !== lId));
-        r.json().then(data => {
-          setAlerts({ type: "error", message: data.message });
-        });
-      }
-    }).catch(e => {
-      setNotes(prevNotes => prevNotes.filter(note => note.lId !== lId));
-      setAlerts({ type: "error", message: "Something went wrong. Please try again" });
     });
+
+    return new Promise((resolve, reject) => {
+      toast.promise(
+        duplicateNoteRequest.then(async r => {
+          if (r.ok) {
+            const newNote = await r.json();
+            setNotes(prev => prev.slice(0, -1).concat(newNote));
+            resolve();
+          } else throw new Error("Failed to Duplicate Note. Please try again.");
+        }).catch(e => {
+          resolve()
+          throw new Error("Failed to Duplicate Note. Please try again.");
+        }),
+        {
+          loading: "Duplicating Note...",
+          success: "Note Duplicated Successfully",
+          error: (e) => {
+            setNotes(prev => prev.slice(0, -1));
+            reject(e);
+            return e.message;
+          },      
+        })
+    })
   }
 
   // Toggle Note Pinned
@@ -234,7 +276,7 @@ const NotesState = (props) => {
 }
 
   return (
-    <NotesContext.Provider value={{ notes, toModify, editModal, loading, getNotes,addNote, deleteNote, updateNote, setToModify, duplicateNote, toggleNotePinned, addCollaborator }}>
+    <NotesContext.Provider value={{ notes, toModify, editModal, loading, addNoteKey,getNotes,addNote, deleteNote, updateNote, setToModify, duplicateNote, toggleNotePinned, addCollaborator, setAddNoteKey }}>
     {props.children}
   </NotesContext.Provider>
 );

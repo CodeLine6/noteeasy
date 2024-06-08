@@ -18,7 +18,7 @@ const useModifyModal = () => {
             x: toModify.notePositions.translatedX,
             y: toModify.notePositions.translatedY,
             opacity: 1,
-        }, { type: "keyframes", })
+        }, { type: "Inertia", })
     }
 
     const exitState = () => ({
@@ -28,43 +28,45 @@ const useModifyModal = () => {
         y: -(topDifference.current - toModify.notePositions.translatedY),
         opacity: 0,
         transition: {
-            type: 'keyframes',
+            type: "Inertia",
         }
     })
 
     useEffect(() => {
         if (toModify) {
-            const initialX = toModify.noteEl.getBoundingClientRect().left - toModify.notePositions.translatedX
-            const initialY = toModify.noteEl.getBoundingClientRect().top - toModify.notePositions.translatedY
+            setTimeout(() => {
+                widthRatio.current = editModal.current.offsetWidth / toModify.noteEl.offsetWidth;
+                heightRatio.current = editModal.current.offsetHeight / toModify.noteEl.offsetHeight;
 
-            widthRatio.current = editModal.current.offsetWidth / toModify.noteEl.offsetWidth;
-            heightRatio.current = editModal.current.offsetHeight / toModify.noteEl.offsetHeight;
+                const initialX = toModify.noteEl.getBoundingClientRect().left - toModify.notePositions.translatedX
+                const initialY = toModify.noteEl.getBoundingClientRect().top - toModify.notePositions.translatedY
 
-            leftDifference.current = editModal.current.getBoundingClientRect().left - initialX;
-            topDifference.current = editModal.current.getBoundingClientRect().top - initialY;
+                leftDifference.current = editModal.current.getBoundingClientRect().left - initialX;
+                topDifference.current = editModal.current.getBoundingClientRect().top - initialY;
 
-            controls.set(exitState)
+                controls.set(exitState)
 
-            toModify.animate(toModify.noteEl, {
-                scaleX: widthRatio.current,
-                scaleY: heightRatio.current,
-                x: leftDifference.current,
-                y: topDifference.current,
-                opacity: 0,
-                transformOrigin: "top left",
-            }, { type: "keyframes", })
+                toModify.animate(toModify.noteEl, {
+                    scaleX: widthRatio.current,
+                    scaleY: heightRatio.current,
+                    x: leftDifference.current,
+                    y: topDifference.current,
+                    opacity: 0,
+                    transformOrigin: "top left",
+                }, { type: "Inertia" })
 
-            controls.start({
-                x: 0,
-                y: 0,
-                scaleX: 1,
-                scaleY: 1,
-                opacity: 1,
-                transformOrigin: "top left",
-                transition: {
-                    type: "keyframes",
-                }
-            });
+                controls.start({
+                    x: 0,
+                    y: 0,
+                    scaleX: 1,
+                    scaleY: 1,
+                    opacity: 1,
+                    transformOrigin: "top left",
+                    transition: {
+                        type: "Inertia"
+                    }
+                });
+            }, 40)
         }
     }, [toModify])
 

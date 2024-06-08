@@ -8,29 +8,17 @@ import NotesContext from '../../../context/Notes/NotesContext';
 import { ModalContext } from '../../../context/Modal/ModalContext';
 import { useContext } from 'react';
 
-const NoteItem = ({ note, loading, parent }) => {
-    const x = useMotionValue(0)
-    const y = useMotionValue(0)
+const NoteItem = ({ note, loading }) => {
+
     const { setToModify } = useContext(NotesContext);
     const { setModifyComponent } = useContext(ModalContext)
-    const [scope, animate] = useAnimate()
 
-    const modifyObj = () => {
-        return {
-            ...note,
-            noteEl: scope.current,
-            animate,
-            notePositions: {
-                translatedX: x.current,
-                translatedY: y.current
-            }
-        }
-    }
+
 
     const handleDoubleClick = (e) => {
         // check if element is double clicked
         if (e.detail === 2) {
-            setToModify(modifyObj())
+            setToModify(note)
             setModifyComponent('update')
         }
 
@@ -39,11 +27,11 @@ const NoteItem = ({ note, loading, parent }) => {
     { typeof note.title === 'string' && console.log(`Note Item : ${note.title}`) }
 
     return (
-        <motion.div onClick={handleDoubleClick} ref={scope} style={{ x, y, opacity: note.pending ? 0.4 : 1 }} drag dragConstraints={parent} dragElastic={0.1} whileDrag={{ scale: 1.1 }} className="group w-full border border-[#e0e0e0] rounded-md overflow-hidden bg-white" layout layoutId={note._id}>
+        <motion.div onClick={handleDoubleClick} style={{ opacity: note.pending ? 0.4 : 1 }} className="group w-full border border-[#e0e0e0] rounded-md overflow-hidden bg-white" layout layoutId={note._id}>
             <div className="relative px-3 h-full flex flex-col">
                 <ToggleNotePinned className="group-hover:block" noteId={note._id} isPinned={note.pinned} />
                 <Notebody note={note} loading={loading}>
-                    <Noteactions modifyObj={modifyObj} loading={loading} />
+                    <Noteactions note={note} loading={loading} />
                 </Notebody>
             </div>
         </motion.div>

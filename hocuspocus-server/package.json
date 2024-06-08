@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "@hocuspocus/server": "^2.13.1"
+  },
+  "name": "hocuspocus-server",
+  "version": "1.0.0",
+  
+  "main": "yjsserver.js",
+  "devDependencies": {},
+ "scripts": {
+    "start": "nodemon yjsserver"
+ },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

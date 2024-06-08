@@ -2,8 +2,8 @@ const { Hocuspocus } = require("@hocuspocus/server");
 
 // Configure the server …
 const server = new Hocuspocus({
-  port: 1234,
+  port: process.env.PORT,
 });
 
 // … and run it!
-module.exports = () => server.listen();
+server.listen();

@@ -1,7 +1,6 @@
 const connectToMongo = require('./db');
 const express = require("express");
 const cors = require('cors');
-const startYjsServer = require('./yjsserver');
 
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
@@ -77,7 +76,6 @@ connectToMongo()
 
 app.listen(port, () => {
     console.log('Noteseasy backend listening on port http://localhost:', port)
-    startYjsServer()
 });
 
 

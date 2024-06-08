@@ -66,7 +66,7 @@ const useModifyModal = () => {
                         type: "Inertia"
                     }
                 });
-            }, 40)
+            }, 300)
         }
     }, [toModify])
 

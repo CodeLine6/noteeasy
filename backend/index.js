@@ -1,7 +1,7 @@
 const connectToMongo = require('./db');
 const express = require("express");
 const cors = require('cors');
-const cloudinary = require('cloudinary').v2;
+const startYjsServer = require('./yjsserver');
 
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
@@ -73,12 +73,13 @@ app.get("/", (req, res) => {
     res.send("Hello");
 })
 app.use('/api/editor', require('./routes/editor'));
+connectToMongo()
 
 app.listen(port, () => {
     console.log('Noteseasy backend listening on port http://localhost:', port)
+    startYjsServer()
 });
 
-connectToMongo()
 
 
 function generateRandomPassword(length) {

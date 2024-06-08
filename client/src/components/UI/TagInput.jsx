@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { IoCloseSharp } from "react-icons/io5";
 
 
-const TagInput = ({ customStyle, tagsValue, resetTagsRef = null }) => {
+const TagInput = ({ customStyle, tagsValue, handleUpdate, resetTagsRef = null }) => {
     const [tags, setTags] = useState(tagsValue.current)
 
     const addTag = (e) => {
         if (!e.target.value.trim()) return
         let newTag = e.target.value.trim();
         let updatedTags = tags.concat(newTag)
-        setTags(updatedTags)
         tagsValue.current = updatedTags
         e.target.value = null
+        setTags(updatedTags)
+        handleUpdate && handleUpdate()
     }
 
     const handleKeyDown = (e) => {
@@ -22,16 +23,19 @@ const TagInput = ({ customStyle, tagsValue, resetTagsRef = null }) => {
         else if (e['code'] == 'Backspace') {
             if (e.target.value === '') {
                 let updatedTags = tags.slice(0, tags.length - 1)
-                setTags(updatedTags)
                 tagsValue.current = updatedTags
+                setTags(updatedTags)
+                handleUpdate && handleUpdate()
             }
         }
     }
 
+
     const handleRemoveTag = (idx) => {
         const updatedTags = tags.filter((tag, index) => index !== idx)
-        setTags(updatedTags)
         tagsValue.current = updatedTags
+        setTags(updatedTags)
+        handleUpdate && handleUpdate()
     }
 
     const resetTags = () => setTags([])

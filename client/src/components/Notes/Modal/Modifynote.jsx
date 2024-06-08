@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import NotesContext from '../../../context/Notes/NotesContext';
-import useModifyModal from '../../../Hooks/useModifyModal';
 import { motion } from "framer-motion"
 import Modalcontent from './Modalcontent';
 
@@ -15,7 +14,6 @@ const ModifyNote = () => {
         }
     }, [toModify])
 
-    const [controls, exitState, resetPositions] = useModifyModal();
 
     const handleEscape = async (e) => {
         if (e['code'] === 'Escape') {
@@ -26,20 +24,18 @@ const ModifyNote = () => {
 
     function closeModal() {
         setAddNoteKey(new Date().getTime());
-        setTimeout(async () => {
-            resetPositions()
-            await controls.start(exitState)
-            editModal.current.close()
-            setToModify(null)
-        }, 100)
+
+        //editModal.current.close()
+        setToModify(null)
+
     }
 
     useEffect(() => {
         console.log("Modify Modal Mounted")
     }, [])
 
-    return <motion.dialog key={toModify?._id} ref={editModal} className="overflow-visible rounded-lg opacity-0 mt-[20vh] bg-transparent group" animate={controls} exit={exitState} onKeyDown={handleEscape}>
-        <Modalcontent closeModalAnimation={closeModal} />
+    return <motion.dialog key={toModify?._id} ref={editModal} className="overflow-visible rounded-lg mt-[20vh] bg-transparent group" onKeyDown={handleEscape} layoutId={toModify?._id}>
+        <Modalcontent closeModal={closeModal} />
     </motion.dialog>
 }
 

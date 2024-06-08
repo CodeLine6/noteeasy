@@ -3,7 +3,7 @@ import NotesContext from '../../context/Notes/NotesContext';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
 import TagInput from '../UI/TagInput';
-import TailwindEditor from '../Editor/Editor';
+import Editor from '../Editor/Editor';
 
 const Addnote = () => {
     const { addNote, addNoteKey } = useContext(NotesContext);
@@ -69,7 +69,7 @@ const Addnote = () => {
                 <div className='hidden group-focus-within:block'>
                     <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' value={null} />
                 </div>
-                <TailwindEditor key={`${addNoteKey}`} content={description} parent={formWrapperRef} editorInstance={newNoteDescriptionEditorInstance} />
+                <Editor key={`${addNoteKey}`} content={description} parent={formWrapperRef} editorInstance={newNoteDescriptionEditorInstance} />
                 <div className='hidden group-focus-within:block'>
                     <TagInput customStyle="px-3" tagsValue={tags} resetTagsRef={resetTags} />
                 </div>

@@ -1,5 +1,5 @@
 const { collaboratorInviteBody } = require("../../Email/Invite");
-const { transporter } = require("../../Email/transporter");
+const transporter = require("../../Email/transporter");
 const Invites = require("../../models/Invites");
 const Notes = require("../../models/Notes");
 const User = require("../../models/User");
@@ -40,7 +40,7 @@ const addnotecollaborator = async (req,res) => {
         };
 
         transporter.sendMail(message).then(async (info) => {
-            const updatedNote = await Notes.findById(note._id).populate('user').populate('collaborators')
+            const updatedNote = await Notes.findById(note.id).populate('user').populate('collaborators')
             return res.status(200).json(updatedNote)
         }).catch((err) => {
             console.log(err)

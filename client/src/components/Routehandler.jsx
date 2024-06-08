@@ -13,18 +13,16 @@ import Resetpassword from "../pages/Resetpassword";
 import LoginSuccess from "../pages/LoginSuccess";
 import SearchProvider from "../context/SearchContext";
 import { Toaster } from "sonner";
+import AuthContextProvider from "../context/authContext";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const Authcheck = ({ Comp }) => {
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (localStorage.getItem('authToken')) {
-            return navigate('/')
-        }
-    }, [])
+    if (localStorage.getItem('authToken'))
+        return navigate('/')
 
-    return !localStorage.getItem('authToken') && <Comp />
+    return <Comp />
 }
 
 const Routehandler = () => {
@@ -37,7 +35,7 @@ const Routehandler = () => {
     return (
         <AlertState>
             <Routes>
-                <Route path="/" element={<>
+                <Route path="/" element={<AuthContextProvider>
                     <Background />
                     <div className="z-10 relative h-screen flex flex-col">
                         <SearchProvider>
@@ -46,7 +44,8 @@ const Routehandler = () => {
                             <Home />
                         </SearchProvider>
                     </div>
-                </>} />
+                </AuthContextProvider>
+                } />
                 <Route path="login" element={<Authcheck Comp={Login} />} />
                 <Route path="signup" element={<Authcheck Comp={Signup} />} />
                 <Route path="invite" element={<Invite />} />

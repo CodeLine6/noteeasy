@@ -2,10 +2,8 @@ import { generateHTML } from "@tiptap/html"
 import { clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {
-  TiptapImage,
   TiptapLink,
   CharacterCount,
-  UpdatedImage,
   TaskList,
   TaskItem,
   HorizontalRule,
@@ -16,19 +14,19 @@ import {
 } from "novel/extensions";
 import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
+import { colors } from "../components/Editor/constants";
+import tiptapImage from "../components/Editor/extensions/image";
 
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
-const convertJSONtoHTML = (html) => {
+export const convertJSONtoHTML = (html) => {
   const htmlContent = generateHTML(html, [
     StarterKit,
     Placeholder,
     TiptapLink,
-    TiptapImage,
-    UpdatedImage,
     TaskList,
     TaskItem,
     HorizontalRule,
@@ -36,10 +34,11 @@ const convertJSONtoHTML = (html) => {
     Youtube,
     CharacterCount,
     TextStyle,
-    Underline
+    Underline,
+    tiptapImage
   ])
 
-  return htmlToText(htmlContent)
+  return htmlContent
 }
 
 function htmlToText(html) {
@@ -48,4 +47,10 @@ function htmlToText(html) {
   return temp.textContent; // Or return temp.innerText if you need to return only visible text. It's slower.
 }
 
-export default convertJSONtoHTML
+
+
+const getRandomElement = (list) =>
+  list[Math.floor(Math.random() * list.length)];
+
+export const getRandomColor = () => getRandomElement(colors);
+

@@ -1,20 +1,23 @@
 import {
-  TiptapImage,
   TiptapLink,
   CharacterCount,
-  UpdatedImage,
   TaskList,
   TaskItem,
-  HorizontalRule,
   StarterKit,
   Placeholder,
   AIHighlight,
   Youtube,
 } from "novel/extensions";
 
-import { UploadImagesPlugin } from "novel/plugins";
+import YChange from "./ychange-extension"
+import CodeBlock from '@tiptap/extension-code-block'
+import tiptapImage from "./image";
 import { cx } from "class-variance-authority";
-import TextStyle from "@tiptap/extension-text-style";
+
+
+const CustomCodeBlock = CodeBlock.extend({
+  marks : 'ychange'
+})
 
 const aiHighlight = AIHighlight;
 const placeholder = Placeholder.configure({
@@ -28,26 +31,8 @@ const tiptapLink = TiptapLink.configure({
   },
 });
 
-const tiptapImage = TiptapImage.extend({
-  addProseMirrorPlugins() {
-    return [
-      UploadImagesPlugin({
-        imageClass: cx("opacity-40 rounded-lg border border-stone-200"),
-      }),
-    ];
-  },
-}).configure({
-  allowBase64: false,
-  HTMLAttributes: {
-    class: cx("rounded-lg border border-muted"),
-  },
-});
 
-const updatedImage = UpdatedImage.configure({
-  HTMLAttributes: {
-    class: cx("rounded-lg border border-muted"),
-  },
-});
+
 
 const taskList = TaskList.configure({
   HTMLAttributes: {
@@ -61,13 +46,9 @@ const taskItem = TaskItem.configure({
   nested: true,
 });
 
-const horizontalRule = HorizontalRule.configure({
-  HTMLAttributes: {
-    class: cx("mt-4 mb-6 border-t border-muted-foreground"),
-  },
-});
 
 const starterKit = StarterKit.configure({
+  history: false,
   bulletList: {
     HTMLAttributes: {
       class: cx("list-disc list-outside leading-3 -mt-2"),
@@ -92,6 +73,7 @@ const starterKit = StarterKit.configure({
     HTMLAttributes: {
       class: cx("rounded-sm bg-foreground border p-5 font-mono font-medium"),
     },
+
   },
   code: {
     HTMLAttributes: {
@@ -99,7 +81,11 @@ const starterKit = StarterKit.configure({
       spellcheck: "false",
     },
   },
-  horizontalRule: false,
+  horizontalRule: {
+    HTMLAttributes: {
+      class: cx("mt-4 mb-6 border-t border-muted-foreground"),
+    },
+  },
   dropcursor: {
     color: "#DBEAFE",
     width: 4,
@@ -121,12 +107,11 @@ export const defaultExtensions = [
   placeholder,
   tiptapLink,
   tiptapImage,
-  updatedImage,
   taskList,
   taskItem,
-  horizontalRule,
   aiHighlight,
   youtube,
   characterCount,
-  TextStyle
+  YChange,
+  CustomCodeBlock
 ];

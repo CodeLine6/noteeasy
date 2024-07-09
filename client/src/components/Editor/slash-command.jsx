@@ -7,7 +7,6 @@ import {
     ImageIcon,
     List,
     ListOrdered,
-    MessageSquarePlus,
     Text,
     TextQuote,
     Youtube
@@ -120,7 +119,7 @@ export const suggestionItems = createSuggestionItems([
         searchTerms: ["codeblock"],
         icon: <Code size={18} />,
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
+            editor.chain().focus().deleteRange(range).setCustomCodeBlock().run(),
     },
     {
         title: "Image",
@@ -136,8 +135,10 @@ export const suggestionItems = createSuggestionItems([
             input.onchange = async () => {
                 if (input.files?.length) {
                     const file = input.files[0];
+                    const caption = prompt("Please enter image caption");
                     const pos = editor.view.state.selection.from;
-                    uploadFn(file, editor.view, pos);
+                    const src = await uploadFn(file, editor.view, pos);
+                    editor.commands.setFigure({ caption, src });
                 }
             };
             input.click();

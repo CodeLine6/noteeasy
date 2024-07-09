@@ -33,6 +33,9 @@ const onUpload = (file) => {
                 } else {
                     throw new Error("Error uploading image. Please try again.");
                 }
+            }).catch((e) => {
+                reject(e);
+                return e.message;
             }),
             {
                 loading: "Uploading image...",
@@ -60,6 +63,9 @@ export const onDelete = (url) => {
                 } else {
                     throw new Error("Error deleting image.");
                 }
+            }).catch((e) => {
+                reject(e);
+                return e.message;
             }),
             {
                 loading: "Deleting image...",
@@ -75,17 +81,30 @@ export const onDelete = (url) => {
 
 }
 
-export const uploadFn = createImageUpload({
-    onUpload,
-    validateFn: (file) => {
-        if (!file.type.includes("image/")) {
-            toast.error("File type not supported.");
-            return false;
-        }
-        if (file.size / 1024 / 1024 > 20) {
-            toast.error("File size too big (max 20MB).");
-            return false;
-        }
-        return true;
-    },
-});
+export const uploadFn = async (file, view, pos) => {
+
+    if (!file.type.includes("image/")) {
+        toast.error("File type not supported.");
+        return;
+    }
+    if (file.size / 1024 / 1024 > 20) {
+        toast.error("File size too big (max 20MB).");
+        return;
+    }
+    let rejectPromise;
+    const promise = new Promise((resolve, reject) => {
+        rejectPromise = reject;
+    })
+    const funcTion = createImageUpload({
+        onUpload : (file) => promise ,
+        validateFn: (file) => true,
+    })
+
+    funcTion(file, view, pos);
+    const url = await onUpload(file);
+    if (url) {
+        rejectPromise()
+        return url
+    }
+
+};

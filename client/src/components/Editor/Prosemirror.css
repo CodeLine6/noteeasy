@@ -4,7 +4,7 @@
 
 /* Empty editor placeholder */
 
-.ProseMirror[contenteditable='false'] ::before {
+div::not(.version-preview)  .ProseMirror[contenteditable='false']::before {
     content: 'Loading...';
     position: absolute;
     top: 1rem;
@@ -238,4 +238,34 @@ div[data-youtube-video] > iframe {
   div[data-youtube-video] > iframe {
     max-height: 100px;
   }
+}
+
+[ychange_type] {
+  position: relative;
+}
+
+.ychange-hover {
+  display: none;
+}
+
+*:hover > .ychange-hover {
+  display: inline;
+  position: absolute;
+  top: -10px;
+  left: 0;
+  font-size: 12px;
+  padding: 5px;
+  border-radius: 3px 3px 0 0;
+  color: #fdfdfe;
+  user-select: none;
+  word-break: normal;
+}
+
+ychange[ychange_type="removed"],
+p[ychange_type="removed"] {
+  text-decoration: line-through;
+}
+
+img[ychange_type="removed"] {
+  padding: 2px;
 }

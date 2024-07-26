@@ -1,37 +1,40 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, { useContext, useRef, useEffect, useState } from 'react';
 import NotesContext from '../../context/Notes/NotesContext';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
 import TagInput from '../UI/TagInput';
-import Editor from '../Editor/Editor';
+import Editor from '../Editor';
+import { defaultExtensions } from '../Editor/extensions';
+import { slashCommand } from '../Editor/slash-command';
 
-const Addnote = () => {
-    const { addNote, addNoteKey } = useContext(NotesContext);
-
+export default () => {
+    const { addNote, addNoteKey, setAddNoteKey } = useContext(NotesContext);
     const formWrapperRef = useRef(null);
+    const [editor, setEditor] = useState(null);
+
     const titleInputRef = useRef(null);
-    const newNoteDescriptionEditorInstance = useRef(null);
     const description = useRef(null);
     const tags = useRef([]);
     const resetTags = useRef(null);
+
+    const editorExtensions = [
+        ...defaultExtensions,
+        slashCommand(formWrapperRef),
+    ];
 
     const resetInputs = () => {
         titleInputRef.current.value = null;
         description.current = null;
         tags.current = [];
         resetTags.current();
-        newNoteDescriptionEditorInstance.current.editor.commands.clearContent();
-        newNoteDescriptionEditorInstance.current.setWordsCount({
-            words: 0,
-            characters: 0
-        })
+        setAddNoteKey(new Date().getTime());
     };
 
     const handleAdd = (e) => {
         e?.preventDefault();
         e?.target.blur();
         const title = titleInputRef.current.value;
-        if (newNoteDescriptionEditorInstance.current.editor.getText() === '') return
+        if (editor.getText() === '') return
         addNote(title, description.current, tags.current);
         resetInputs();
     };
@@ -53,12 +56,19 @@ const Addnote = () => {
 
     useEffect(() => {
         formWrapperRef.current.addEventListener('click', formClickHandler);
+        if (editor) {
+            formWrapperRef.current.style.minHeight = formWrapperRef.current.offsetHeight + 'px';
+            editor.on("update", () => {
+                const content = editor.getJSON();
+                description.current = content
+            })
+        }
 
         return () => {
             formWrapperRef.current?.removeEventListener('click', formClickHandler);
             document.removeEventListener('mousedown', documentListener);
         };
-    }, []);
+    }, [editor]);
 
     console.log("Add note component");
 
@@ -69,7 +79,7 @@ const Addnote = () => {
                 <div className='hidden group-focus-within:block'>
                     <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' value={null} />
                 </div>
-                <Editor key={`${addNoteKey}`} content={description} parent={formWrapperRef} editorInstance={newNoteDescriptionEditorInstance} />
+                <Editor key={addNoteKey} setEditorInstance={setEditor} editorExtensions={editorExtensions} />
                 <div className='hidden group-focus-within:block'>
                     <TagInput customStyle="px-3" tagsValue={tags} resetTagsRef={resetTags} />
                 </div>
@@ -78,5 +88,3 @@ const Addnote = () => {
         </div>
     );
 };
-
-export default Addnote;

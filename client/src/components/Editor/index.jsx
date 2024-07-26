@@ -1,72 +1,27 @@
 import { EditorBubble, EditorCommand, EditorCommandEmpty, EditorCommandItem, EditorCommandList, EditorContent, EditorRoot } from "novel";
-import { defaultExtensions } from "./extensions";
-import { slashCommand, suggestionItems } from "./slash-command";
+import { suggestionItems } from "./slash-command";
 import { NodeSelector } from "./selectors/node-selector";
 import { LinkSelector } from "./selectors/link-selector";
 import { ColorSelector } from "./selectors/color-selector";
 import { TextButtons } from "./selectors/text-buttons";
-import { ImageResizer, handleCommandNavigation } from "novel/extensions";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { handleCommandNavigation } from "novel/extensions";
+import { useRef, useState } from "react";
 import { handleImageDrop, handleImagePaste } from "novel/plugins";
 import { onDelete, uploadFn } from "./editor-image";
 import { useDebouncedCallback } from "use-debounce";
-import * as Y from "yjs";
-import { TiptapCollabProvider } from "@hocuspocus/provider";
-import Collaboration from "@tiptap/extension-collaboration";
-import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+
 import './Prosemirror.css';
-import { useAuth } from "src/context/authContext";
 
-const colors = ["#958DF1", "#F98181", "#FBBC88", "#FAF594", "#70CFF8", "#94FADB",
-    "#B9F18D", "#C3E2C2", "#EAECCC", "#AFC8AD", "#EEC759", "#9BB8CD",
-    "#FF90BC", "#FFC0D9", "#DC8686", "#7ED7C1", "#F3EEEA", "#89B9AD",
-    "#D0BFFF", "#FFF8C9", "#CBFFA9", "#9BABB8", "#E3F4F4",
-];
-const getRandomElement = (list) =>
-    list[Math.floor(Math.random() * list.length)];
-
-const getRandomColor = () => getRandomElement(colors);
-
-const Editor = ({ initialContent, content, parent, editorInstance, noteId }) => {
+const Editor = ({ editorExtensions, setEditorInstance, preview }) => {
     const [openLink, setOpenLink] = useState(null);
     const [openColor, setOpenColor] = useState(false);
     const [openNode, setOpenNode] = useState(null);
     const [wordsCount, setWordsCount] = useState({ words: 0, characters: 0 });
     const [previousImages, setPreviousImages] = useState([]);
+    const editorRef = useRef(null)
     const bubbleRef = useRef(null)
-    const yDoc = useMemo(() => new Y.Doc(), []);
-    const provider = useMemo(() => (
-        initialContent ? new TiptapCollabProvider({
-            baseUrl: process.env.REACT_APP_YJS_BASE_URL,
-            name: noteId || "",
-            document: yDoc,
-        }) : null
-    ), [])
-    const currUser = {
-        name: useAuth().user.name,
-        color: getRandomColor(),
-    }
-
-    const editorExtensions = useMemo(() => {
-        const extensionArray = [
-            ...defaultExtensions,
-            slashCommand(parent)
-        ]
-
-        if (noteId) {
-            extensionArray.push(
-                Collaboration.configure({
-                    document: yDoc,
-                }),
-                CollaborationCursor.configure({
-                    provider
-                }),
-            )
-        } return extensionArray
-    }, [noteId])
 
     const debouncedUpdates = useDebouncedCallback(async (editor) => {
-        content.current = editor.getJSON();
         setWordsCount({
             words: editor.storage.characterCount.words(),
             characters: editor.storage.characterCount.characters()
@@ -83,17 +38,6 @@ const Editor = ({ initialContent, content, parent, editorInstance, noteId }) => 
         return images;
     };
 
-    useEffect(() => {
-        //disconnect from yjs
-        return () => {
-            if (provider) {
-                provider.disconnect();
-                provider.destroy();
-                yDoc.destroy();
-            }
-        }
-
-    }, [])
 
     return (
         <div className="relative w-full max-w-screen-lg">
@@ -117,12 +61,21 @@ const Editor = ({ initialContent, content, parent, editorInstance, noteId }) => 
                         attributes: {
                             class: `prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full`,
                         },
-                        handlePaste: (view, event) => handleImagePaste(view, event, uploadFn),
+                        handlePaste: (view, event) => handleImagePaste(view, event, async (...args) => {
+                            const url = await uploadFn(...args);
+                            editorRef.current.commands.setFigure({ src: url });
+                        }),
                         handleDrop: (view, event, _slice, moved) =>
-                            handleImageDrop(view, event, moved, uploadFn),
+                            handleImageDrop(view, event, moved, async (...args) => {
+                                const url = await uploadFn(...args);
+                                editorRef.current.commands.setFigure({ src: url });
+                            }),
 
                     }}
                     onUpdate={({ editor }) => {
+
+                        debouncedUpdates(editor)
+                        if (preview) return
                         const currentImages = getImageNodes(editor.state.doc);
 
                         // Detect removed images
@@ -137,36 +90,12 @@ const Editor = ({ initialContent, content, parent, editorInstance, noteId }) => 
                         }
                         // Update the previous state to the current state
                         setPreviousImages(currentImages);
-                        debouncedUpdates(editor)
                     }}
                     onCreate={({ editor }) => {
-
-                        if (editorInstance) {
-                            editorInstance.current = {
-                                editor,
-                                setWordsCount
-                            }
-                            setTimeout(() => {
-                                parent.current.style.minHeight = parent.current.offsetHeight + 'px';
-                            }, 500)
-                            return
-                        }
-
-                        content.current = editor.getJSON();
-                        editor.setOptions({ editable: false });
-                        editor.chain().focus().updateUser(currUser).run();
-
-
-                        provider.on("synced", () => {
-                            editor.setOptions({ editable: true });
-                            if (editor.isEmpty) {
-                                editor.commands.setContent(initialContent || "");
-                                const currentImages = getImageNodes(editor.state.doc);
-                                setPreviousImages(currentImages);
-                            }
-                        });
+                        editorRef.current = editor
+                        setEditorInstance(editor)
                     }}
-                    slotAfter={<ImageResizer />}>
+                >
                     <EditorCommand tabIndex={1} className='z-50 h-auto max-h-[330px]  w-72 overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all'>
                         <EditorCommandEmpty className='px-2 text-muted-foreground'>No results</EditorCommandEmpty>
                         <EditorCommandList>

@@ -5,6 +5,13 @@ import { IoCopyOutline } from "react-icons/io5";
 import { VscEdit, VscTrash } from "react-icons/vsc";
 import { FiUserPlus } from "react-icons/fi";
 import { ModalContext } from '../../../context/Modal/ModalContext';
+import { MoreVertical } from "lucide-react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "../../UI/dropdown-menu"
+import NoteVersionModal from '../NoteVersionModal';
 
 const Noteactions = ({ note, loading }) => {
     const { deleteNote, setToModify, duplicateNote } = useContext(NotesContext);
@@ -21,16 +28,23 @@ const Noteactions = ({ note, loading }) => {
                 setModifyComponent('addCollaborator')
             }} />
             <Actionbutton loading={loading} Icon={IoCopyOutline} handler={() => duplicateNote(note._id)} />
-            <Actionbutton loading={loading} Icon={VscTrash} handler={() => deleteNote(note._id)} />
+            {note.isOwner && <Actionbutton loading={loading} Icon={VscTrash} handler={() => deleteNote(note._id)} />}
+            <DropdownMenu modal={false}>
+                <DropdownMenuTrigger >
+                    <MoreVertical className="h-3.5 w-3.5" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                    <NoteVersionModal key={note._id} note={note} />
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     )
 }
-
 const Actionbutton = ({ loading, Icon, handler }) => {
     if (loading)
         return <Skeleton width={30} containerClassName="mx-2" />
 
-    return <button className="p-2 rounded-full hover:bg-gray-200" onClick={handler}><Icon /></button>
+    return <button className="p-2 rounded-full hover:bg-gray-200 active:outline-none" onClick={handler}><Icon /></button>
 }
 
 export default Noteactions

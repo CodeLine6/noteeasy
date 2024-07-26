@@ -3,7 +3,7 @@ import NotesContext from '../../context/Notes/NotesContext';
 import NoteItem from './NoteItem';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SearchContext } from '../../context/SearchContext';
-import convertJSONtoHTML from '../../lib/utils';
+import { convertJSONtoHTML } from '../../lib/utils';
 
 const NotesList = () => {
     const { notes, loading } = useContext(NotesContext);

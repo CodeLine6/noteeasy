@@ -31,7 +31,7 @@ const Modalcontent = ({ closeModal }) => {
     return (
         <>
             {toModify &&
-                <motion.div ref={divRef} className="rounded-lg bg-white w-[600px] relative" style={{ transformOrigin: "top left" }} animate={controls}>
+                <motion.div ref={divRef} className="rounded-lg bg-white  relative" style={{ transformOrigin: "top left" }} animate={controls}>
                     {modifyComponent === 'update' ?
                         <Updatenote closeModal={closeModal} /> :
                         <Addcollaborator key={toModify._id} closeModal={closeModal} />}

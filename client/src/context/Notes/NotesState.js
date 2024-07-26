@@ -14,11 +14,17 @@ const NotesState = (props) => {
   const {user:currentUser} = useAuth();
 
   useEffect(() => {
-    getNotes().then(d => {
-      setNotes(d)
+    currentUser._id && getNotes().then(notes => {
+      const userNotes = notes.map(note => {
+         return {
+            ...note,
+            isOwner: note.user._id === currentUser._id
+         }
+      })
+      setNotes(userNotes)
       setLoading(false)
     });
-  }, []);
+  }, [currentUser]);
 
   // Fetch Notes
   const getNotes = async () => {
@@ -294,8 +300,7 @@ const removeCollaborator = async (collaboratorId) => {
   const parsedResponse = await response.json()
 
     const currNotes = [...notes];
-    const isCurrUserOwner = currentUser._id === toModify.user._id
-    if(isCurrUserOwner) {
+    if(toModify.isOwner) {
       const modifiedNoteIndex = currNotes.findIndex(note => note._id === toModify._id);
       currNotes.splice(modifiedNoteIndex, 1, parsedResponse); 
       setToModify(parsedResponse)

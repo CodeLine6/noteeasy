@@ -10,7 +10,11 @@ const notesSchema = new Schema({
         default : "Untitled"
     },
     description : {
-        type: Object,
+        type: Object, 
+    },
+    document : {
+        type: Buffer,
+        default : null
     },
     tag : [{
         type: String

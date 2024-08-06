@@ -21,7 +21,7 @@ const forgetPassword = async (req, res) => {
     
         // Email configuration
         const mailOptions = {
-          from: process.env.GMAIL_APP_USER,
+          from: process.env.ZOHO_EMAIL_ID,
           to: req.body.email,
           subject: "Reset Password",
           html: resetPasswordBody(user.name,token),

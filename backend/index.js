@@ -32,6 +32,6 @@ app.get("/health", (req, res) => {
 app.ws("/", (websocket, request) => server.handleConnection(websocket, request));
 connectToMongo();
 
-app.listen(process.env.PORT_NUMBER, () => {
-    console.log('Noteseasy backend listening on port http://localhost:', process.env.PORT_NUMBER)
+app.listen(process.env.SERVER_PORT_NUMBER, () => {
+    console.log('Noteseasy backend listening on port http://localhost:', process.env.SERVER_PORT_NUMBER)
 });

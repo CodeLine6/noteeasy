@@ -7,7 +7,7 @@ const Notes = require("./models/Notes");
 let timer;
 
 const server = Server.configure({
-    port : process.env.PORT_NUMBER,
+    port : process.env.SERVER_PORT_NUMBER,
     debounce: 2000,
     extensions: [
         new Database({

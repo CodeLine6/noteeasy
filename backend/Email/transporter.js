@@ -5,8 +5,8 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true, // use SSL
     auth: {
-        user: process.env.GMAIL_APP_USER, // your email address
-        pass: process.env.GMAIL_APP_PASSWORD // your password
+        user: process.env.ZOHO_EMAIL_ID, // your email address
+        pass: process.env.ZOHO_EMAIL_PASSWORD // your password
     }
 });
 

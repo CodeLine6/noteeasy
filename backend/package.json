@@ -1,5 +1,5 @@
 {
-  "name": "noteseasy",
+  "name": "noteseasy-server",
   "version": "1.0.0",
   "description": "Noteseasy - Your notebook on the cloud",
   "main": "index.js",

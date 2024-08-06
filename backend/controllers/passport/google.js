@@ -23,7 +23,7 @@ module.exports = async (accessToken, refreshToken, profile, done) => {
 
             // Email configuration
             const mailOptions = {
-                from: process.env.GMAIL_APP_USER,
+                from: process.env.ZOHO_EMAIL_ID,
                 to: user.email,
                 subject: "Welcome to Noteseasy",
                 html: temporaryPasswordBody(user.name, tempPassword),

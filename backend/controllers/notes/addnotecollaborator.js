@@ -33,7 +33,7 @@ const addnotecollaborator = async (req,res) => {
     const sharer = await User.findById(req.user.id);
 
         let message = {
-            from: process.env.GMAIL_APP_USER, // sender address
+            from: process.env.ZOHO_EMAIL_ID, // sender address
             to: collaboratorEmail, // list of receivers
             subject: `Note shared with you: "${note.title}"`, // Subject line
             html: collaboratorInviteBody(sharer.name,sharer.email,note,collaboratorEmail, collaboratorDetails), // html body

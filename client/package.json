@@ -1,5 +1,6 @@
 {
   "name": "noteseasy",
+  "description": "Noteseasy - Your notebook on the cloud",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -45,12 +46,10 @@
     "yjs": "^13.6.15"
   },
   "scripts": {
-    "craco": "craco start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "both": "concurrently  \"npm run start\" \"cd ../backend\" \"npm run start\""
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

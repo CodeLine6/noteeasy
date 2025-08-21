@@ -5,7 +5,7 @@
 **Notes Easy** is a cloud-based note-taking application that allows you to create, share, and collaborate on notes from anywhere. 
 
 ### Check out the live app!
-Head over to https://noteseasy.online to experience Notes Easy in action. 
+Head over to https://noteeasy.netlify.app/ to experience Notes Easy in action. 
 
 ### Features
 
@@ -88,3 +88,4 @@ npm start
 ### Contributing
 
 We welcome contributions to Notes Easy.
+
